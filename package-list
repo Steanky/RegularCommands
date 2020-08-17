@@ -1,0 +1,9 @@
+com.steank.regularcommands.adapter
+com.steank.regularcommands.adapter.field
+com.steank.regularcommands.adapter.group
+com.steank.regularcommands.commands
+com.steank.regularcommands.converter
+com.steank.regularcommands.formatting
+com.steank.regularcommands.provider
+com.steank.regularcommands.util
+com.steank.regularcommands.validator
