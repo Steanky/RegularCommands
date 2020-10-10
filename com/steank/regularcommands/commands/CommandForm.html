@@ -99,7 +99,7 @@ var activeTableTab = "activeTableTab";
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li>com.steank.regularcommands.commands.CommandForm</li>
+<li>io.github.regularcommands.commands.CommandForm</li>
 </ul>
 </li>
 </ul>
@@ -131,7 +131,7 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/steank/regularcommands/commands/CommandForm.html#CommandForm-java.lang.String-com.steank.regularcommands.commands.PermissionData-com.steank.regularcommands.converter.Parameter...-">CommandForm</a></span>(java.lang.String&nbsp;usage,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../com/steank/regularcommands/commands/CommandForm.html#CommandForm-java.lang.String-PermissionData-Parameter...-">CommandForm</a></span>(java.lang.String&nbsp;usage,
            <a href="../../../../com/steank/regularcommands/commands/PermissionData.html" title="class in com.steank.regularcommands.commands">PermissionData</a>&nbsp;permissionData,
            <a href="../../../../com/steank/regularcommands/converter/Parameter.html" title="class in com.steank.regularcommands.converter">Parameter</a>...&nbsp;parameters)</code>
 <div class="block">Creates a CommandForm.</div>
@@ -154,7 +154,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>protected abstract java.lang.String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/steank/regularcommands/commands/CommandForm.html#execute-com.steank.regularcommands.commands.Context-java.lang.Object:A-">execute</a></span>(<a href="../../../../com/steank/regularcommands/commands/Context.html" title="class in com.steank.regularcommands.commands">Context</a>&nbsp;context,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/steank/regularcommands/commands/CommandForm.html#execute-Context-java.lang.Object:A-">execute</a></span>(<a href="../../../../com/steank/regularcommands/commands/Context.html" title="class in com.steank.regularcommands.commands">Context</a>&nbsp;context,
        java.lang.Object[]&nbsp;arguments)</code>
 <div class="block">Runs the command after the conversion and validation steps have been performed.</div>
 </td>
@@ -191,7 +191,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>protected abstract <a href="../../../../com/steank/regularcommands/validator/CommandValidator.html" title="class in com.steank.regularcommands.validator">CommandValidator</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/steank/regularcommands/commands/CommandForm.html#getValidator-com.steank.regularcommands.commands.Context-java.lang.Object:A-">getValidator</a></span>(<a href="../../../../com/steank/regularcommands/commands/Context.html" title="class in com.steank.regularcommands.commands">Context</a>&nbsp;context,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/steank/regularcommands/commands/CommandForm.html#getValidator-Context-java.lang.Object:A-">getValidator</a></span>(<a href="../../../../com/steank/regularcommands/commands/Context.html" title="class in com.steank.regularcommands.commands">Context</a>&nbsp;context,
             java.lang.Object[]&nbsp;arguments)</code>
 <div class="block">Gets the validator used to perform additional verification on the command parameters, based off of the context
  or the state of any user-defined objects.</div>
@@ -217,7 +217,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>protected java.util.List&lt;java.lang.String&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/steank/regularcommands/commands/CommandForm.html#tabComplete-com.steank.regularcommands.commands.Context-java.lang.String:A-">tabComplete</a></span>(<a href="../../../../com/steank/regularcommands/commands/Context.html" title="class in com.steank.regularcommands.commands">Context</a>&nbsp;context,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/steank/regularcommands/commands/CommandForm.html#tabComplete-Context-java.lang.String:A-">tabComplete</a></span>(<a href="../../../../com/steank/regularcommands/commands/Context.html" title="class in com.steank.regularcommands.commands">Context</a>&nbsp;context,
            java.lang.String[]&nbsp;args)</code>
 <div class="block">Returns a tab completion list for the given parameter and text the user has typed so far.</div>
 </td>
@@ -244,7 +244,7 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="CommandForm-java.lang.String-com.steank.regularcommands.commands.PermissionData-com.steank.regularcommands.converter.Parameter...-">
+<a name="CommandForm-java.lang.String-com.steank.regularcommands.commands.PermissionData-io.github.regularcommands.converter.Parameter...-">
 <!--   -->
 </a>
 <ul class="blockListLast">
