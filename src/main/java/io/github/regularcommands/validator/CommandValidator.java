@@ -26,7 +26,7 @@ public class CommandValidator {
     * @param add The CommandValidator that will be executed before this one
     * @return The CommandValidator that was passed to the add parameter
     */
-   public final CommandValidator chain(CommandValidator add) {
+   public CommandValidator chain(CommandValidator add) {
       next = add;
       return add;
    }
@@ -39,7 +39,7 @@ public class CommandValidator {
     * @return An ImmutablePair object whose left object indicates the success of the validation and whose right object
     * contains a user-friendly error message that should be null if the left boolean is true
     */
-   public final ImmutablePair<Boolean, String> validate(Context context, Object[] arguments) {
+   public ImmutablePair<Boolean, String> validate(Context context, Object[] arguments) {
       if(next == null) {
          return step.validate(context, arguments);
       }

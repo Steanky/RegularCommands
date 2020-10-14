@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * Contains a few useful methods for processing strings.
  */
-public class StringUtils {
+public final class StringUtils {
     /**
      * Splits an input string around the specified delimiter character, which can be escaped.
      * @param input The string to be split

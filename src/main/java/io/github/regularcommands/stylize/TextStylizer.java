@@ -1,26 +1,72 @@
 package io.github.regularcommands.stylize;
 
+import net.md_5.bungee.api.ChatColor;
+
 import java.util.*;
 
 /**
  * Data container object, used to store IComponentSettings objects.
  */
-public class TextStylizer {
+public final class TextStylizer {
+    private static final TextStylizer instance = new TextStylizer();
+
     private final Map<String, ComponentSettings> formatters;
 
     /**
      * Creates a new TextStylizer object.
      */
-    public TextStylizer() {
+    private TextStylizer() {
         formatters = new HashMap<>();
+
+        formatters.put("reset", in -> {
+            in.setColor(ChatColor.WHITE);
+            in.setBold(false);
+            in.setObfuscated(false);
+            in.setStrikethrough(false);
+            in.setUnderlined(false);
+            in.setItalic(false);
+        });
+
+        formatters.put("url", in -> {
+            in.setColor(ChatColor.BLUE);
+            in.setBold(true);
+            in.setUnderlined(true);
+        });
+
+        formatters.put("blue", in -> in.setColor(ChatColor.BLUE));
+        formatters.put("red", in -> in.setColor(ChatColor.RED));
+        formatters.put("white", in -> in.setColor(ChatColor.WHITE));
+        formatters.put("aqua", in -> in.setColor(ChatColor.AQUA));
+        formatters.put("black", in -> in.setColor(ChatColor.BLACK));
+        formatters.put("dark_aqua", in -> in.setColor(ChatColor.DARK_AQUA));
+        formatters.put("dark_blue", in -> in.setColor(ChatColor.DARK_BLUE));
+        formatters.put("dark_gray", in -> in.setColor(ChatColor.DARK_GRAY));
+        formatters.put("dark_green", in -> in.setColor(ChatColor.DARK_GREEN));
+        formatters.put("dark_purple", in -> in.setColor(ChatColor.DARK_PURPLE));
+        formatters.put("dark_red", in -> in.setColor(ChatColor.DARK_RED));
+        formatters.put("gold", in -> in.setColor(ChatColor.GOLD));
+        formatters.put("gray", in -> in.setColor(ChatColor.GRAY));
+        formatters.put("green", in -> in.setColor(ChatColor.GREEN));
+        formatters.put("strikethrough", in -> in.setStrikethrough(true));
+        formatters.put("bold", in -> in.setBold(true));
+        formatters.put("obfuscate", in -> in.setObfuscated(true));
+        formatters.put("underline", in -> in.setUnderlined(true));
+        formatters.put("italicize", in -> in.setItalic(true));
     }
 
+    /**
+     * Retrieves the singleton TextStylizer instance.
+     * @return The singleton instance of TextStylizer
+     */
+    public static TextStylizer getInstance() {
+        return instance;
+    }
     /**
      * Adds an IComponentSettings object to the map.
      * @param name The name of the IComponentSettings object
      * @param componentFormatter The IComponentSettings object itself
      */
-    public final void addComponent(String name, ComponentSettings componentFormatter) {
+    public void addComponent(String name, ComponentSettings componentFormatter) {
         formatters.put(Objects.requireNonNull(name, "name cannot be null"),
                 Objects.requireNonNull(componentFormatter, "componentFormatter cannot be null"));
     }
@@ -30,7 +76,7 @@ public class TextStylizer {
      * @param name The name of the IComponentSettings object
      * @return The associated IComponentSettings, or null if there are none with the specified name
      */
-    public final ComponentSettings getComponent(String name) {
+    public ComponentSettings getComponent(String name) {
         return formatters.get(name);
     }
 
@@ -39,7 +85,7 @@ public class TextStylizer {
      * @param name The name of the component to search for
      * @return true if the component exists, false otherwise
      */
-    public final boolean hasComponent(String name) {
+    public boolean hasComponent(String name) {
         return formatters.containsKey(name);
     }
 
@@ -47,7 +93,7 @@ public class TextStylizer {
      * Gets the names of all the components stored in this TextStylizer instance.
      * @return A List of all the names of the components store in this TextStylizer instance
      */
-    public final List<String> getComponentNames() {
+    public List<String> getComponentNames() {
         return new ArrayList<>(formatters.keySet());
     }
 
@@ -55,7 +101,7 @@ public class TextStylizer {
      * Gets all of the IComponentSettings objects stored in this TextStylizer instance.
      * @return A List of all the IComponentSettings objects stored in this TextStylizer instance
      */
-    public final List<ComponentSettings> getComponentSettings() {
+    public List<ComponentSettings> getComponentSettings() {
         return new ArrayList<>(formatters.values());
     }
 }

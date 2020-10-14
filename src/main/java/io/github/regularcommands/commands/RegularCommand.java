@@ -28,7 +28,7 @@ public abstract class RegularCommand {
      * Adds a form to this RegularCommand.
      * @param form The form to add
      */
-    public final void addForm(CommandForm form) {
+    public void addForm(CommandForm form) {
         forms.add(Objects.requireNonNull(form, "form cannot be null"));
 
         usageBuilder.append('/').append(getName()).append(' ');
@@ -49,7 +49,7 @@ public abstract class RegularCommand {
      * Gets the name of this RegularCommand.
      * @return The name of this RegularCommand
      */
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
@@ -57,7 +57,7 @@ public abstract class RegularCommand {
      * Gets the usage string that contains information about all the forms of this command.
      * @return The usage string for this RegularCommand
      */
-    public final String getUsage() { return usageBuilder.toString(); }
+    public String getUsage() { return usageBuilder.toString(); }
 
     /**
      * Returns a list of all CommandForm objects that match the provided argument array.
@@ -65,7 +65,7 @@ public abstract class RegularCommand {
      * @param sender The CommandSender that is attempting to run this command
      * @return All matching command forms, or an empty list if none exist
      */
-    protected final List<MatchResult> getMatches(String[] args, CommandSender sender) {
+    protected List<MatchResult> getMatches(String[] args, CommandSender sender) {
         List<MatchResult> matches = new ArrayList<>();
         for(CommandForm form : forms) {
             if(form.getPermissions().validateFor(sender)) { //check permissions before running expensive matching algorithm

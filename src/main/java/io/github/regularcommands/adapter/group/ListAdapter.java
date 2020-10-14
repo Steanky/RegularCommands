@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * This implementation of GroupAdapter encapsulates any kind of List.
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ListAdapter extends GroupAdapter {
     private final List list;
 
@@ -31,7 +31,6 @@ public class ListAdapter extends GroupAdapter {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean addItem(Object key, Object item) {
         if(key == null && (item == null ? null : item.getClass()) == super.getValueClass()) {
@@ -52,7 +51,6 @@ public class ListAdapter extends GroupAdapter {
         list.remove((int)key);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List getItems() {
         return new ArrayList(list);
@@ -63,7 +61,6 @@ public class ListAdapter extends GroupAdapter {
         return list.size();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List getKeys() {
         List list = new ArrayList();

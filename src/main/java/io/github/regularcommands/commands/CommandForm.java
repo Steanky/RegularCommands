@@ -81,7 +81,7 @@ public abstract class CommandForm {
      * Returns a copy of the parameters array.
      * @return A copy of the parameters array
      */
-    public final Parameter[] getParameters() {
+    public Parameter[] getParameters() {
         return Arrays.copyOf(parameters, parameters.length);
     }
 
@@ -89,15 +89,15 @@ public abstract class CommandForm {
      * Returns true if the CommandForm contains at least one optional parameter, false otherwise.
      * @return true if the CommandForm contains at least one optional parameter, false otherwise
      */
-    public final boolean isOptional() { return optional; }
+    public boolean isOptional() { return optional; }
 
     /**
      * Returns true if the CommandForm contains a vararg parameter, false otherwise.
      * @return true if the CommandForm contains a vararg parameter, false otherwise
      */
-    public final boolean isVararg() { return vararg; }
+    public boolean isVararg() { return vararg; }
 
-    final MatchResult matches(String[] args) {
+    public MatchResult matches(String[] args) {
         if(args.length == 0) {
             boolean matches = parameters.length == 0;
             return MatchResult.of(this, true, matches, matches ? ImmutableTriple.of(true, ArrayUtils.EMPTY_OBJECT_ARRAY, null) : null);
@@ -143,7 +143,7 @@ public abstract class CommandForm {
         return MatchResult.of(this, true,true, ImmutableTriple.of(true, result, null));
     }
 
-    final int fuzzyMatch(String[] args) {
+    public int fuzzyMatch(String[] args) {
         if(parameters.length == 0 || args.length > requiredLength && !vararg) {
             return 0;
         }
@@ -166,7 +166,7 @@ public abstract class CommandForm {
      * Returns a short, user-friendly string that should explain what the form does.
      * @return A user-friendly string explaining what the CommandForm does
      */
-    public final String getUsage() {
+    public String getUsage() {
         return usage;
     }
 
@@ -174,7 +174,7 @@ public abstract class CommandForm {
      * Returns the PermissionData, which is used to determine if the form can be executed based on the sender.
      * @return The PermissionData object
      */
-    public final PermissionData getPermissions() {
+    public PermissionData getPermissions() {
         return permissions;
     }
 
@@ -189,7 +189,7 @@ public abstract class CommandForm {
      * form.
      * @return The tab completer to use
      */
-    protected ArgumentCompleter getCompleter() {
+    public ArgumentCompleter getCompleter() {
         return Completers.DEFAULT_COMPLETER;
     }
 
@@ -199,7 +199,7 @@ public abstract class CommandForm {
      * @param parameterIndex The index of the desired parameter
      * @return The parameter located at the given index
      */
-    public final Parameter getParameter(int parameterIndex) {
+    public Parameter getParameter(int parameterIndex) {
         return parameters[parameterIndex];
     }
 
@@ -207,7 +207,7 @@ public abstract class CommandForm {
      * Gets the length of the parameters array.
      * @return The length of the parameters array
      */
-    public final int size() {
+    public int size() {
         return parameters.length;
     }
 
@@ -220,7 +220,7 @@ public abstract class CommandForm {
      *                  parameters array
      * @return The validator used to determine if the command should execute
      */
-    protected abstract CommandValidator getValidator(Context context, Object[] arguments);
+    public abstract CommandValidator getValidator(Context context, Object[] arguments);
 
     /**
      * Runs the command after the conversion and validation steps have been performed. The Object[] array passed to
@@ -230,5 +230,5 @@ public abstract class CommandForm {
      *                  parameters array
      * @return A message that will be displayed to the player, and formatted if getStylizer() doesn't return null
      */
-    protected abstract String execute(Context context, Object[] arguments);
+    public abstract String execute(Context context, Object[] arguments);
 }

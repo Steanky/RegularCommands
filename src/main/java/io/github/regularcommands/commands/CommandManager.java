@@ -3,7 +3,7 @@ package io.github.regularcommands.commands;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.stylize.ComponentSettings;
 import io.github.regularcommands.provider.AdapterManagerProvider;
-import io.github.regularcommands.stylize.Stylizer;
+import io.github.regularcommands.stylize.TextStylizer;
 import io.github.regularcommands.validator.CommandValidator;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -317,7 +317,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
                         if(BUFFER.length() > 0) {
                             String formatterName = BUFFER.toString();
-                            ComponentSettings formatter = Stylizer.STYLIZER.getComponent(formatterName);
+                            ComponentSettings formatter = TextStylizer.getInstance().getComponent(formatterName);
 
                             if(formatter != null) {
                                 name = false;
@@ -414,7 +414,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         if(name) {
                             if(BUFFER.length() > 0) {
                                 String formatterName = BUFFER.toString();
-                                ComponentSettings formatter = Stylizer.STYLIZER.getComponent(formatterName);
+                                ComponentSettings formatter = TextStylizer.getInstance().getComponent(formatterName);
 
                                 if(formatter != null) {
                                     componentFormatters.add(formatter);
