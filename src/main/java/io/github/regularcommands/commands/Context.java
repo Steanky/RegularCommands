@@ -1,6 +1,5 @@
 package io.github.regularcommands.commands;
 
-import io.github.regularcommands.provider.AdapterManagerProvider;
 import org.bukkit.command.CommandSender;
 
 import java.util.Objects;
@@ -12,19 +11,16 @@ import java.util.Objects;
 public class Context {
     private final CommandManager manager;
     private final CommandSender sender;
-    private final AdapterManagerProvider provider;
 
     /**
      * Creates a new Context object, which contains a CommandManager, CommandSender, and IAdapterManagerProvider
      * objects.
      * @param manager The CommandManager
      * @param sender The CommandSender
-     * @param provider The provider
      */
-    public Context(CommandManager manager, CommandSender sender, AdapterManagerProvider provider) {
+    public Context(CommandManager manager, CommandSender sender) {
         this.manager = Objects.requireNonNull(manager, "manager cannot be null");
         this.sender = Objects.requireNonNull(sender, "sender cannot be null");
-        this.provider = provider;
     }
 
     /**
@@ -39,13 +35,5 @@ public class Context {
      */
     public CommandSender getSender() {
         return sender;
-    }
-
-    /**
-     * Gets the IAdapterManagerProvider object.
-     * @return The IAdapterManagerProvider, or null
-     */
-    public AdapterManagerProvider getProvider() {
-        return provider;
     }
 }

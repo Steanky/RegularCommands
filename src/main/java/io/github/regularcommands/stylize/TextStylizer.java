@@ -12,9 +12,6 @@ public final class TextStylizer {
 
     private final Map<String, ComponentSettings> formatters;
 
-    /**
-     * Creates a new TextStylizer object.
-     */
     private TextStylizer() {
         formatters = new HashMap<>();
 

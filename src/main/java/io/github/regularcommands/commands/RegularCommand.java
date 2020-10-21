@@ -3,7 +3,6 @@ package io.github.regularcommands.commands;
 import io.github.regularcommands.completer.ArgumentCompleter;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.converter.Parameter;
-import io.github.regularcommands.provider.AdapterManagerProvider;
 
 import org.bukkit.command.CommandSender;
 
@@ -68,7 +67,7 @@ public abstract class RegularCommand {
     protected List<MatchResult> getMatches(String[] args, CommandSender sender) {
         List<MatchResult> matches = new ArrayList<>();
         for(CommandForm form : forms) {
-            if(form.getPermissions().validateFor(sender)) { //check permissions before running expensive matching algorithm
+            if(form.getPermissions().validateFor(sender)) { //check permissions before running relatively expensive matching algorithm
                 MatchResult matchResult = form.matches(args);
 
                 if(matchResult.matches()) {
@@ -93,7 +92,6 @@ public abstract class RegularCommand {
      * @return A list containing tab completions, or null if none are found
      */
     protected List<String> getCompletions(CommandManager manager, CommandSender sender, String[] args) {
-        AdapterManagerProvider provider = manager.getProvider(sender);
         List<String> possibleCompletions = new ArrayList<>();
 
         for(CommandForm form : forms) {
@@ -101,7 +99,7 @@ public abstract class RegularCommand {
                 ArgumentCompleter completer = form.getCompleter();
 
                 if(completer != null) {
-                    List<String> formCompletions = completer.complete(new Context(manager, sender, provider), form, args);
+                    List<String> formCompletions = completer.complete(new Context(manager, sender), form, args);
 
                     if(formCompletions != null) {
                         possibleCompletions.addAll(formCompletions);

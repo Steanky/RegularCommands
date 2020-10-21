@@ -29,9 +29,9 @@ public abstract class CommandForm {
     /**
      * Creates a CommandForm. In general, each CommandForm object should perform one task or several closely related
      * ones. Each CommandForm can be said to have a 'signature' that is defined by the provided Parameter array. Two
-     * different CommandForms can have 'signature overlap' where either one might be executed given a specific input.
-     * It is highly recommended to avoid this, as it can cause arbitrary behavior (the command that was registered
-     * first will be executed).
+     * different CommandForms can have 'signature overlap' where both can be executed given a set of inputs. In this case,
+     * both forms will be executed. The order in which they are run depends on the order that they were added - command
+     * forms added later will always be executed after forms added earlier.
      *
      * The Parameter array is also validated to ensure some basic assumptions can be made about the signature. 'vararg'
      * parameters cannot appear before non-vararg parameters, optional and vararg parameters cannot be mixed, and finally
@@ -100,7 +100,8 @@ public abstract class CommandForm {
     public MatchResult matches(String[] args) {
         if(args.length == 0) {
             boolean matches = parameters.length == 0;
-            return MatchResult.of(this, true, matches, matches ? ImmutableTriple.of(true, ArrayUtils.EMPTY_OBJECT_ARRAY, null) : null);
+            return MatchResult.of(this, true, matches, matches ? ImmutableTriple.of(true,
+                    ArrayUtils.EMPTY_OBJECT_ARRAY, null) : null);
         }
 
         if(args.length < requiredLength || args.length > parameters.length && !vararg) {
@@ -136,7 +137,8 @@ public abstract class CommandForm {
                 result[i] = conversionResult.middle;
             }
             else { //failed conversion
-                return MatchResult.of(this, true, true, ImmutableTriple.of(false, null, conversionResult.right));
+                return MatchResult.of(this, true, true, ImmutableTriple.of(false, null,
+                        conversionResult.right));
             }
         }
 
@@ -216,8 +218,8 @@ public abstract class CommandForm {
      * or the state of any user-defined objects. This step will always be performed AFTER argument conversion; thus,
      * arguments will contain converted values.
      * @param context The current context
-     * @param arguments An array of converted values, whose types correspond to any converters defined within the
-     *                  parameters array
+     * @param arguments An array of converted values, whose types correspond to the output of any converters defined
+     *                  within the parameters array
      * @return The validator used to determine if the command should execute
      */
     public abstract CommandValidator getValidator(Context context, Object[] arguments);
