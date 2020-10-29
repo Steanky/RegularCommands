@@ -11,11 +11,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.bukkit.command.*;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * This class keeps track of all registered commands and includes some utility functions.
+ */
 public class CommandManager implements CommandExecutor, TabCompleter {
     private final JavaPlugin plugin;
     private final Logger logger;
@@ -61,6 +65,40 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * @return The associated Logger
      */
     public Logger getLogger() { return logger; }
+
+    /**
+     * Sends a player a formatted message, which is stylized according to the same rules as text returned from a
+     * CommandForm. This should never be called from an asynchronous context, as it will likely corrupt the internal
+     * buffer used for parsing input.
+     * @param player The player to send the message to
+     * @param message The message to send
+     */
+    public void sendStylizedMessage(Player player, String message) {
+        ImmutableTriple<Boolean, TextComponent[], String> result = stylize(message);
+        if(result.left) {
+            player.spigot().sendMessage(result.middle);
+        }
+        else {
+            sendErrorMessage(player, result.right);
+        }
+    }
+
+    /**
+     * Broadcasts the formatted message to the entire server, which will be stylized according to the same rules as text
+     * returned from CommandForm. This should never be called from an asynchronous context, as it will likely corrupt
+     * the internal buffer used for parsing input.
+     * @param message The message to broadcast
+     */
+    public void broadcastStylizedMessage(String message) {
+        ImmutableTriple<Boolean, TextComponent[], String> result = stylize(message);
+        if(result.left) {
+            plugin.getServer().spigot().broadcast(result.middle);
+        }
+        else {
+            logger.warning(String.format("Stylization error occured when attempting to broadcast a message: %s",
+                    result.right));
+        }
+    }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {

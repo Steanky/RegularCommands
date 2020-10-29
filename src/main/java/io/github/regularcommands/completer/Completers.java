@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Completers {
-    public static final ArgumentCompleter DEFAULT_COMPLETER = new ArgumentCompleter((context, form, args) -> {
+    public static final ArgumentCompleter PARAMETER_COMPLETER = new ArgumentCompleter((context, form, args) -> {
         Parameter[] parameters = form.getParameters();
 
         if(parameters.length > 0) {

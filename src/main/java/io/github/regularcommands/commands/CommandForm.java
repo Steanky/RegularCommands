@@ -29,7 +29,7 @@ public abstract class CommandForm {
     /**
      * Creates a CommandForm. In general, each CommandForm object should perform one task or several closely related
      * ones. Each CommandForm can be said to have a 'signature' that is defined by the provided Parameter array. Two
-     * different CommandForms can have 'signature overlap' where both can be executed given a set of inputs. In this case,
+     * different CommandForms can have 'signature overlap' where both can be executed given one set of inputs. In this case,
      * both forms will be executed. The order in which they are run depends on the order that they were added - command
      * forms added later will always be executed after forms added earlier.
      *
@@ -97,6 +97,11 @@ public abstract class CommandForm {
      */
     public boolean isVararg() { return vararg; }
 
+    /**
+     * Attempts to match the provided argument array with this CommandForm.
+     * @param args The complete input argument array
+     * @return A MatchResult argument containing information about the match attempt
+     */
     public MatchResult matches(String[] args) {
         if(args.length == 0) {
             boolean matches = parameters.length == 0;
@@ -145,6 +150,12 @@ public abstract class CommandForm {
         return MatchResult.of(this, true,true, ImmutableTriple.of(true, result, null));
     }
 
+    /**
+     * Returns how many sequential arguments the provided argument array matches. This is used to implement relatively
+     * intelligent tab completion.
+     * @param args The (potentially incomplete) argument array to match
+     * @return The number of matching, sequential arguments
+     */
     public int fuzzyMatch(String[] args) {
         if(parameters.length == 0 || args.length > requiredLength && !vararg) {
             return 0;
@@ -192,7 +203,7 @@ public abstract class CommandForm {
      * @return The tab completer to use
      */
     public ArgumentCompleter getCompleter() {
-        return Completers.DEFAULT_COMPLETER;
+        return Completers.PARAMETER_COMPLETER;
     }
 
     /**

@@ -128,90 +128,6 @@ public final class Converters {
         };
     }
 
-    public static ImmutablePair<Boolean, BigDecimal> tryParseBigDecimal(String value) {
-        try {
-            return ImmutablePair.of(true, new BigDecimal(value));
-        }
-        catch(NumberFormatException e) {
-            return ImmutablePair.of(false, BigDecimal.ZERO);
-        }
-    }
-
-    public static ImmutablePair<Boolean, BigInteger> tryParseBigInteger(String value) {
-        try {
-            return ImmutablePair.of(true, new BigInteger(value));
-        }
-        catch(NumberFormatException e) {
-            return ImmutablePair.of(false, BigInteger.ZERO);
-        }
-    }
-
-    public static ImmutablePair<Boolean, Long> tryParseLong(String value) {
-        try {
-            return ImmutablePair.of(true, Long.parseLong(value));
-        }
-        catch(NumberFormatException e) {
-            return ImmutablePair.of(false, 0L);
-        }
-    }
-
-    public static ImmutablePair<Boolean, Integer> tryParseInt(String value) {
-        try {
-            return ImmutablePair.of(true, Integer.parseInt(value));
-        }
-        catch(NumberFormatException e) {
-            return ImmutablePair.of(false, 0);
-        }
-    }
-
-    public static ImmutablePair<Boolean, Double> tryParseDouble(String value) {
-        try {
-            return ImmutablePair.of(true, Double.parseDouble(value));
-        }
-        catch(NumberFormatException e) {
-            return ImmutablePair.of(false, 0D);
-        }
-    }
-
-    public static ImmutablePair<Boolean, Float> tryParseFloat(String value) {
-        try {
-            return ImmutablePair.of(true, Float.parseFloat(value));
-        }
-        catch(NumberFormatException e) {
-            return ImmutablePair.of(false, 0F);
-        }
-    }
-
-    public static ImmutablePair<Boolean, Short> tryParseShort(String value) {
-        try {
-            return ImmutablePair.of(true, Short.parseShort(value));
-        }
-        catch(NumberFormatException e) {
-            return ImmutablePair.of(false, (short)0);
-        }
-    }
-
-    public static ImmutablePair<Boolean, Byte> tryParseByte(String value) {
-        try {
-            return ImmutablePair.of(true, Byte.parseByte(value));
-        }
-        catch(NumberFormatException e) {
-            return ImmutablePair.of(false, (byte)0);
-        }
-    }
-
-    public static ImmutablePair<Boolean, Boolean> tryParseBoolean(String value) {
-        if(value.equalsIgnoreCase("true")) {
-            return ImmutablePair.of(true, true);
-        }
-        else if(value.equalsIgnoreCase("false")) {
-            return ImmutablePair.of(true, false);
-        }
-        else {
-            return ImmutablePair.of(false, false);
-        }
-    }
-
     /**
      * Creates an ArgumentConverter that can convert an input sequence into an array, given an ArgumentConverter
      * that is capable of converting individual arguments, and a delimiter to split the input string.
@@ -251,5 +167,90 @@ public final class Converters {
 
             return new ImmutableTriple<>(true, resultingArray, null);
         };
+    }
+
+
+    private static ImmutablePair<Boolean, BigDecimal> tryParseBigDecimal(String value) {
+        try {
+            return ImmutablePair.of(true, new BigDecimal(value));
+        }
+        catch(NumberFormatException e) {
+            return ImmutablePair.of(false, BigDecimal.ZERO);
+        }
+    }
+
+    private static ImmutablePair<Boolean, BigInteger> tryParseBigInteger(String value) {
+        try {
+            return ImmutablePair.of(true, new BigInteger(value));
+        }
+        catch(NumberFormatException e) {
+            return ImmutablePair.of(false, BigInteger.ZERO);
+        }
+    }
+
+    private static ImmutablePair<Boolean, Long> tryParseLong(String value) {
+        try {
+            return ImmutablePair.of(true, Long.parseLong(value));
+        }
+        catch(NumberFormatException e) {
+            return ImmutablePair.of(false, 0L);
+        }
+    }
+
+    private static ImmutablePair<Boolean, Integer> tryParseInt(String value) {
+        try {
+            return ImmutablePair.of(true, Integer.parseInt(value));
+        }
+        catch(NumberFormatException e) {
+            return ImmutablePair.of(false, 0);
+        }
+    }
+
+    private static ImmutablePair<Boolean, Double> tryParseDouble(String value) {
+        try {
+            return ImmutablePair.of(true, Double.parseDouble(value));
+        }
+        catch(NumberFormatException e) {
+            return ImmutablePair.of(false, 0D);
+        }
+    }
+
+    private static ImmutablePair<Boolean, Float> tryParseFloat(String value) {
+        try {
+            return ImmutablePair.of(true, Float.parseFloat(value));
+        }
+        catch(NumberFormatException e) {
+            return ImmutablePair.of(false, 0F);
+        }
+    }
+
+    private static ImmutablePair<Boolean, Short> tryParseShort(String value) {
+        try {
+            return ImmutablePair.of(true, Short.parseShort(value));
+        }
+        catch(NumberFormatException e) {
+            return ImmutablePair.of(false, (short)0);
+        }
+    }
+
+    private static ImmutablePair<Boolean, Byte> tryParseByte(String value) {
+        try {
+            return ImmutablePair.of(true, Byte.parseByte(value));
+        }
+        catch(NumberFormatException e) {
+            return ImmutablePair.of(false, (byte)0);
+        }
+    }
+
+    private static ImmutablePair<Boolean, Boolean> tryParseBoolean(String value) {
+        if(value.equalsIgnoreCase("true")) {
+            return ImmutablePair.of(true, true);
+        }
+        else if(value.equalsIgnoreCase("false")) {
+            return ImmutablePair.of(true, false);
+        }
+        else {
+            return ImmutablePair.of(false, false);
+        }
     }
 }

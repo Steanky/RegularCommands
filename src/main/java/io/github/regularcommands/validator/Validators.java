@@ -1,6 +1,5 @@
 package io.github.regularcommands.validator;
 
-import io.github.regularcommands.commands.Context;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.tuple.ImmutablePair;

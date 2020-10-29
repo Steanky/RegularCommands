@@ -217,7 +217,7 @@ public class Parameter {
     }
 
     /**
-     * Returns whether or not this Parameter is optional (has a default value)
+     * Returns whether or not this Parameter is optional (has a default value).
      * @return true if this parameter is optional, false otherwise
      */
     public boolean isOptional() {
@@ -226,7 +226,7 @@ public class Parameter {
 
     /**
      * Gets whether or not this Parameter is variable-length (whether it will be used to match and convert any number
-     * of subsequent arguments)
+     * of subsequent arguments).
      * @return true if this parameter is vararg, false otherwise
      */
     public boolean isVararg() { return isVararg; }
