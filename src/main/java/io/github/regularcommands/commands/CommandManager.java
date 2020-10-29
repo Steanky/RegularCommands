@@ -254,13 +254,13 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 case '}':
                     if(!escape) {
                         if(name) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped close " +
-                                    "bracket in name specifier.", input, index));
+                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped " +
+                                    "close bracket in name specifier.", input, index));
                         }
 
                         if(!component) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped close " +
-                                    "bracket in non-component region.", input, index));
+                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped " +
+                                    "close bracket in non-component region.", input, index));
                         }
 
                         if(componentFormatters.size() > 0) {
@@ -277,8 +277,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                             BUFFER.setLength(0);
                         }
                         else {
-                            return ImmutableTriple.of(false, null, formatStylizerError("You must specify" +
-                                    " at least one formatter.", input, index));
+                            return ImmutableTriple.of(false, null, formatStylizerError("You must " +
+                                    "specify at least one formatter.", input, index));
                         }
                     }
                     else {
@@ -289,13 +289,13 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 case '>':
                     if(!escape) {
                         if(name) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped name" +
-                                    " specifier token in name specifier.", input, index));
+                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped " +
+                                    "name specifier token in name specifier.", input, index));
                         }
 
                         if(component) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped name" +
-                                    " specifier token in component (nested components are not allowed).", input, index));
+                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped " +
+                                    "name specifier token in component (nested components are not allowed).", input, index));
                         }
 
                         if(BUFFER.length() > 0) {

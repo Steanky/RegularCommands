@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Data container object, used to store IComponentSettings objects.
  */
-public final class TextStylizer {
+public class TextStylizer {
     private static final TextStylizer instance = new TextStylizer();
 
     private final Map<String, ComponentSettings> formatters;

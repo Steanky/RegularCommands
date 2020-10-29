@@ -3,6 +3,9 @@ package io.github.regularcommands.converter;
 import io.github.regularcommands.commands.CommandForm;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+/**
+ * Data container class used internally to store the result of testing a CommandForm against a user input string.
+ */
 public class MatchResult {
     private final CommandForm form;
     private final boolean hasPermission;

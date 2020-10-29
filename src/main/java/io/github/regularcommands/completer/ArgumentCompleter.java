@@ -5,16 +5,29 @@ import io.github.regularcommands.commands.Context;
 
 import java.util.List;
 
-public final class ArgumentCompleter {
+public class ArgumentCompleter {
     private final CompletionStep step;
     private ArgumentCompleter next;
+    private final boolean mutable;
 
     /**
-     * Creates a new ArgumentCompleter object with the specified CompletionStep.
+     * Creates a new ArgumentCompleter object with the specified CompletionStep and mutability. If the mutable field
+     * is set to false, this ArgumentCompleter instance will throw an exception if an attempt is made to chain another
+     * validator to it.
+     * @param step The argument completion step
+     * @param mutable Whether or not the ArgumentCompleter is mutable
+     */
+    public ArgumentCompleter(CompletionStep step, boolean mutable) {
+        this.step = step;
+        this.mutable = mutable;
+    }
+
+    /**
+     * Creates a new mutable ArgumentCompleter object with the specified CompletionStep.
      * @param step The argument completion step
      */
     public ArgumentCompleter(CompletionStep step) {
-        this.step = step;
+        this(step, true);
     }
 
     /**
@@ -23,8 +36,13 @@ public final class ArgumentCompleter {
      * @return The ArgumentCompleter supplied to parameter 'next'
      */
     public ArgumentCompleter chain(ArgumentCompleter next) {
-        this.next = next;
-        return next;
+        if(mutable) {
+            this.next = next;
+            return next;
+        }
+        else {
+            throw new IllegalStateException("Cannot chain to immutable ArgumentCompleters");
+        }
     }
 
     /**

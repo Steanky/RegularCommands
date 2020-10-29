@@ -5,16 +5,14 @@ import org.bukkit.command.CommandSender;
 import java.util.Objects;
 
 /**
- * An immutable object used as a simple data container. It holds a CommandManager, CommandSender and
- * IAdapterManagerProvider object. It is passed to CommandForm instances when a command is executed or tab completed.
+ * An immutable object used as a simple data container. It holds a CommandManager and a CommandSender object.
  */
 public class Context {
     private final CommandManager manager;
     private final CommandSender sender;
 
     /**
-     * Creates a new Context object, which contains a CommandManager, CommandSender, and IAdapterManagerProvider
-     * objects.
+     * Creates a new Context object, which contains a CommandManager and a CommandSender.
      * @param manager The CommandManager
      * @param sender The CommandSender
      */

@@ -12,23 +12,41 @@ import java.util.Objects;
 public class CommandValidator {
    private final ValidationStep step;
    private CommandValidator next;
+   private final boolean mutable;
 
    /**
-    * Creates a new CommandValidator instance.
+    * Creates a new CommandValidator instance with the specified mutability. Immutable validators will throw an
+    * exception if an attempt is made to chain another validator to this one.
     * @param step The IValidationStep used by this validator
+    * @param mutable Whether or not this validator is mutable
     */
-   public CommandValidator(ValidationStep step) {
+   public CommandValidator(ValidationStep step, boolean mutable) {
       this.step = Objects.requireNonNull(step, "validation step cannot be null");
+      this.mutable = mutable;
    }
 
    /**
-    * Makes the execution of this validator 'dependent on' the success of the chained validator.
+    * Creates a new mutable CommandValidator instance.
+    * @param step The IValidationStep used by this validator
+    */
+   public CommandValidator(ValidationStep step) {
+      this(step, true);
+   }
+
+   /**
+    * Makes the execution of this validator 'dependent on' the success of the chained validator. This will throw
+    * an exception if the validator is immutable.
     * @param add The CommandValidator that will be executed before this one
     * @return The CommandValidator that was passed to the add parameter
     */
    public CommandValidator chain(CommandValidator add) {
-      next = add;
-      return add;
+      if(mutable) {
+         next = add;
+         return add;
+      }
+      else {
+         throw new IllegalStateException("Cannot chain to immutable validators");
+      }
    }
 
    /**

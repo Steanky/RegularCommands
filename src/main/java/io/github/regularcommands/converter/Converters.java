@@ -1,10 +1,14 @@
 package io.github.regularcommands.converter;
 
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.bukkit.Material;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Objects;
 
 /**
  * Utility class containing built-in converters and helper methods.
@@ -102,6 +106,16 @@ public final class Converters {
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Boolean.", argument));
     };
 
+    public static final ArgumentConverter<Material> MATERIAL_CONVERTER = argument -> {
+        Material material = Material.getMaterial(argument);
+
+        if(material != null) {
+            return ImmutableTriple.of(true, material, null);
+        }
+
+        return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Material.", argument));
+    };
+
     /**
      * Converts any generic IArgumentConverter into an IArgumentConverter of generic type Object.
      * @param original The IArgumentConverter to convert
@@ -196,5 +210,46 @@ public final class Converters {
         else {
             return ImmutablePair.of(false, false);
         }
+    }
+
+    /**
+     * Creates an ArgumentConverter that can convert an input sequence into an array, given an ArgumentConverter
+     * that is capable of converting individual arguments, and a delimiter to split the input string.
+     * @param elementConverter The converter that will convert each element
+     * @param delimiter The delimiter used to split up the input string
+     * @param emptyArray An empty array
+     * @param <T> The type of argument we're trying to convert
+     * @return An argument converter capable of transforming an input string into an array
+     */
+    public static <T> ArgumentConverter<T[]> newArrayConverter(ArgumentConverter<T> elementConverter, String delimiter,
+                                                               T[] emptyArray) {
+        Objects.requireNonNull(elementConverter, "element converter cannot be null");
+        Objects.requireNonNull(delimiter, "delimiter cannot be null");
+        Objects.requireNonNull(emptyArray, "emptyArray cannot be null");
+        Validate.isTrue(emptyArray.length == 0, "emptyArray must be empty");
+
+        return argument -> {
+            String[] components = argument.split(delimiter);
+            if(components.length == 0) {
+                return new ImmutableTriple<>(true, emptyArray, null);
+            }
+
+            //noinspection unchecked
+            T[] resultingArray = (T[])Array.newInstance(emptyArray.getClass().getComponentType(), components.length);
+
+            for(int i = 0; i < components.length; i++) {
+                String component = components[i];
+                ImmutableTriple<Boolean, T, String> result = elementConverter.convert(component);
+
+                if(result.left) {
+                    resultingArray[i] = result.middle;
+                }
+                else {
+                    return new ImmutableTriple<>(false, null, result.right);
+                }
+            }
+
+            return new ImmutableTriple<>(true, resultingArray, null);
+        };
     }
 }
