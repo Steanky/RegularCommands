@@ -44,14 +44,15 @@ public final class Validators {
      * @param checkIndices The indices to validate against. All indices must be within range
      * @return A new instance of CommandValidator acting on a range and an array of indices
      */
-    public static CommandValidator newRangeValidator(Range<Comparable<?>> range, int... checkIndices) {
+    public static <T extends Comparable<T>> CommandValidator newRangeValidator(Range<T> range, int... checkIndices) {
         Objects.requireNonNull(range, "range cannot be null");
         Objects.requireNonNull(checkIndices, "checkIndices cannot be null");
         Validate.isTrue(checkIndices.length > 0);
 
         return new CommandValidator((context, arguments) -> {
             for(int index : checkIndices) {
-                Comparable<?> value = (Comparable<?>)arguments[index];
+                //noinspection unchecked
+                T value = (T)arguments[index];
 
                 if(!range.contains(value)) {
                     return new ImmutablePair<>(false, String.format("The provided value '%s' at index '%s' is not " +
