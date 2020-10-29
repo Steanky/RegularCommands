@@ -39,19 +39,19 @@ public final class Validators {
 
     /**
      * Creates a new validator that performs a range check on all of the arguments located at the provided indices.
-     * The arguments must be numbers.
+     * The arguments must be comparable.
      * @param range The Range object used to validate
      * @param checkIndices The indices to validate against. All indices must be within range
      * @return A new instance of CommandValidator acting on a range and an array of indices
      */
-    public static CommandValidator newRangeValidator(Range<Number> range, int... checkIndices) {
+    public static CommandValidator newRangeValidator(Range<Comparable<?>> range, int... checkIndices) {
         Objects.requireNonNull(range, "range cannot be null");
         Objects.requireNonNull(checkIndices, "checkIndices cannot be null");
         Validate.isTrue(checkIndices.length > 0);
 
         return new CommandValidator((context, arguments) -> {
             for(int index : checkIndices) {
-                Number value = (Number)arguments[index];
+                Comparable<?> value = (Comparable<?>)arguments[index];
 
                 if(!range.contains(value)) {
                     return new ImmutablePair<>(false, String.format("The provided value '%s' at index '%s' is not " +
