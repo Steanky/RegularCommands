@@ -1,5 +1,6 @@
-package io.github.regularcommands.validator;
+package io.github.regularcommands.util;
 
+import io.github.regularcommands.validator.CommandValidator;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -42,6 +43,7 @@ public final class Validators {
      * The arguments must be comparable.
      * @param range The Range object used to validate
      * @param checkIndices The indices to validate against. All indices must be within range
+     * @param <T> The type of object that we should expect to validate
      * @return A new instance of CommandValidator acting on a range and an array of indices
      */
     public static <T extends Comparable<T>> CommandValidator newRangeValidator(Range<T> range, int... checkIndices) {

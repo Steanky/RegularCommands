@@ -32,7 +32,7 @@ public abstract class RegularCommand {
 
         usageBuilder.append('/').append(getName()).append(' ');
 
-        for(Parameter parameter : form.getParameters()) {
+        for(Parameter parameter : form) {
             usageBuilder.append(parameter.getUsage()).append(' ');
         }
 
@@ -75,7 +75,7 @@ public abstract class RegularCommand {
                 }
             }
             else {
-                matches.add(MatchResult.of(form, false, false, null));
+                matches.add(new MatchResult(form, false, false, null));
             }
         }
 

@@ -24,6 +24,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     private final JavaPlugin plugin;
     private final Logger logger;
     private final Map<String, RegularCommand> commands;
+    private final TextStylizer stylizer;
 
     private final StringBuilder BUFFER = new StringBuilder(); //used for internal string parsing
 
@@ -38,6 +39,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         this.plugin = Objects.requireNonNull(plugin, "plugin cannot be null");
         logger = plugin.getLogger();
         commands = new HashMap<>();
+        stylizer = new TextStylizer();
     }
 
     /**
@@ -65,6 +67,12 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * @return The associated Logger
      */
     public Logger getLogger() { return logger; }
+
+    /**
+     * Returns the TextStylizer used to stylize command return values
+     * @return The TextStylizer used by this instance
+     */
+    public TextStylizer getStylizer() { return stylizer; }
 
     /**
      * Sends a player a formatted message, which is stylized according to the same rules as text returned from a
@@ -265,7 +273,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
                         if(BUFFER.length() > 0) {
                             String formatterName = BUFFER.toString();
-                            ComponentSettings formatter = TextStylizer.getInstance().getComponent(formatterName);
+                            ComponentSettings formatter = stylizer.getComponent(formatterName);
 
                             if(formatter != null) {
                                 name = false;
@@ -362,7 +370,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         if(name) {
                             if(BUFFER.length() > 0) {
                                 String formatterName = BUFFER.toString();
-                                ComponentSettings formatter = TextStylizer.getInstance().getComponent(formatterName);
+                                ComponentSettings formatter = stylizer.getComponent(formatterName);
 
                                 if(formatter != null) {
                                     componentFormatters.add(formatter);

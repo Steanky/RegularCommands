@@ -12,23 +12,18 @@ public class MatchResult {
     private final boolean matches;
     private final ImmutableTriple<Boolean, Object[], String> conversionResult;
 
-    private MatchResult(CommandForm form, boolean hasPermission, boolean matches, ImmutableTriple<Boolean, Object[], String> conversionResult) {
-        this.form = form;
-        this.hasPermission = hasPermission;
-        this.matches = matches;
-        this.conversionResult = conversionResult;
-    }
-
     /**
      * Creates a new MatchResult object from the specified data
      * @param form The associated CommandForm
      * @param hasPermission Whether or not the user has permission to execute this form
      * @param matches Whether or not the form's signature matches the input
      * @param conversionResult The result of converting every input argument
-     * @return A new MatchResult data container
      */
-    public static MatchResult of(CommandForm form, boolean hasPermission, boolean matches, ImmutableTriple<Boolean, Object[], String> conversionResult) {
-        return new MatchResult(form, hasPermission, matches, conversionResult);
+    public MatchResult(CommandForm form, boolean hasPermission, boolean matches, ImmutableTriple<Boolean, Object[], String> conversionResult) {
+        this.form = form;
+        this.hasPermission = hasPermission;
+        this.matches = matches;
+        this.conversionResult = conversionResult;
     }
 
     /**

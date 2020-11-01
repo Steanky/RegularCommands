@@ -1,16 +1,19 @@
-package io.github.regularcommands.completer;
+package io.github.regularcommands.util;
 
-import io.github.regularcommands.converter.Parameter;
+import io.github.regularcommands.completer.ArgumentCompleter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class for things related to ArgumentCompleters.
+ */
 public final class Completers {
     public static final ArgumentCompleter PARAMETER_COMPLETER = new ArgumentCompleter((context, form, args) -> {
-        Parameter[] parameters = form.getParameters();
+        int length = form.length();
 
-        if(parameters.length > 0) {
-            List<String> options = parameters[Math.min(parameters.length - 1, args.length - 1)].getTabCompletionOptions();
+        if(length > 0) {
+            List<String> options = form.getParameter(Math.min(length - 1, args.length - 1)).getTabCompletionOptions();
             String startsWith = args[args.length - 1];
 
             List<String> results = new ArrayList<>();

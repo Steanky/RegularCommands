@@ -1,18 +1,17 @@
 package io.github.regularcommands.stylize;
 
 import net.md_5.bungee.api.ChatColor;
+import org.apache.commons.lang.Validate;
 
 import java.util.*;
 
 /**
- * Data container object, used to store IComponentSettings objects.
+ * This is used to store stylization information.
  */
 public class TextStylizer {
-    private static final TextStylizer instance = new TextStylizer();
-
     private final Map<String, ComponentSettings> formatters;
 
-    private TextStylizer() {
+    public TextStylizer() {
         formatters = new HashMap<>();
 
         formatters.put("reset", in -> {
@@ -52,18 +51,12 @@ public class TextStylizer {
     }
 
     /**
-     * Retrieves the singleton TextStylizer instance.
-     * @return The singleton instance of TextStylizer
-     */
-    public static TextStylizer getInstance() {
-        return instance;
-    }
-    /**
      * Adds an IComponentSettings object to the map.
      * @param name The name of the IComponentSettings object
      * @param componentFormatter The IComponentSettings object itself
      */
     public void addComponent(String name, ComponentSettings componentFormatter) {
+        Validate.isTrue(!formatters.containsKey(name), "a component with that name already exists");
         formatters.put(Objects.requireNonNull(name, "name cannot be null"),
                 Objects.requireNonNull(componentFormatter, "componentFormatter cannot be null"));
     }

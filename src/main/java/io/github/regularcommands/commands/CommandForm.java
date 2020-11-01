@@ -1,15 +1,16 @@
 package io.github.regularcommands.commands;
 
 import io.github.regularcommands.completer.ArgumentCompleter;
-import io.github.regularcommands.completer.Completers;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.converter.Parameter;
+import io.github.regularcommands.util.Completers;
 import io.github.regularcommands.validator.CommandValidator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -17,7 +18,22 @@ import java.util.Objects;
  * as well as the determine whether or not it should be executed based off of various conditions. CommandForm objects
  * are immutable.
  */
-public abstract class CommandForm {
+public abstract class CommandForm implements Iterable<Parameter> {
+    private final class ParameterIterator implements Iterator<Parameter> {
+        private int index = -1;
+
+        @Override
+        public boolean hasNext() {
+            return ArrayUtils.isArrayIndexValid(parameters, ++index);
+        }
+
+        @Override
+        public Parameter next() {
+            return parameters[index];
+        }
+    }
+
+
     private final String usage;
     private final Parameter[] parameters;
     private final PermissionData permissions;
@@ -78,11 +94,36 @@ public abstract class CommandForm {
     }
 
     /**
+     * Gets the length of the internal parameter array.
+     * @return The length of the internal parameter array
+     */
+    public int length() { return parameters.length; }
+
+    /**
      * Returns a copy of the parameters array.
      * @return A copy of the parameters array
      */
     public Parameter[] getParameters() {
         return Arrays.copyOf(parameters, parameters.length);
+    }
+
+    /**
+     * Gets the parameter at the specified index. Throws an IndexOutOfBounds exception if the parameter index is out of
+     * bounds.
+     * @param parameterIndex The index of the desired parameter
+     * @return The parameter located at the given index
+     */
+    public Parameter getParameter(int parameterIndex) {
+        return parameters[parameterIndex];
+    }
+
+    /**
+     * Returns an iterator for this CommandForm's parameters.
+     * @return An iterator that iterates over this CommandForm's parameters
+     */
+    @Override
+    public Iterator<Parameter> iterator() {
+        return new ParameterIterator();
     }
 
     /**
@@ -105,12 +146,12 @@ public abstract class CommandForm {
     public MatchResult matches(String[] args) {
         if(args.length == 0) {
             boolean matches = parameters.length == 0;
-            return MatchResult.of(this, true, matches, matches ? ImmutableTriple.of(true,
+            return new MatchResult(this, true, matches, matches ? ImmutableTriple.of(true,
                     ArrayUtils.EMPTY_OBJECT_ARRAY, null) : null);
         }
 
         if(args.length < requiredLength || args.length > parameters.length && !vararg) {
-            return MatchResult.of(this, true, false, null);
+            return new MatchResult(this, true, false, null);
         }
 
         int iters = Math.max(args.length, parameters.length);
@@ -133,7 +174,7 @@ public abstract class CommandForm {
             }
 
             if(!parameter.getPattern().matcher(input).matches()) {
-                return MatchResult.of(this, true, false, null); //regex matching failed
+                return new MatchResult(this, true, false, null); //regex matching failed
             }
 
             ImmutableTriple<Boolean, Object, String> conversionResult = parameter.getConverter().convert(input);
@@ -142,12 +183,12 @@ public abstract class CommandForm {
                 result[i] = conversionResult.middle;
             }
             else { //failed conversion
-                return MatchResult.of(this, true, true, ImmutableTriple.of(false, null,
+                return new MatchResult(this, true, true, ImmutableTriple.of(false, null,
                         conversionResult.right));
             }
         }
 
-        return MatchResult.of(this, true,true, ImmutableTriple.of(true, result, null));
+        return new MatchResult(this, true,true, ImmutableTriple.of(true, result, null));
     }
 
     /**
@@ -204,16 +245,6 @@ public abstract class CommandForm {
      */
     public ArgumentCompleter getCompleter() {
         return Completers.PARAMETER_COMPLETER;
-    }
-
-    /**
-     * Gets the parameter at the specified index. Throws an IndexOutOfBounds exception if the parameter index is out of
-     * bounds.
-     * @param parameterIndex The index of the desired parameter
-     * @return The parameter located at the given index
-     */
-    public Parameter getParameter(int parameterIndex) {
-        return parameters[parameterIndex];
     }
 
     /**

@@ -57,18 +57,18 @@ public class ArgumentCompleter {
             return step.complete(context, form, args);
         }
 
-        List<String> result = next.complete(context, form, args);
-        List<String> stepResult = step.complete(context, form, args);
+        List<String> nextResult = next.complete(context, form, args);
+        List<String> result = step.complete(context, form, args);
 
-        if(stepResult != null) {
-            if(result != null) {
-                result.addAll(stepResult);
+        if(result != null) {
+            if(nextResult != null) {
+                nextResult.addAll(result);
             }
             else {
-                result = stepResult;
+                nextResult = result;
             }
         }
 
-        return result;
+        return nextResult;
     }
 }

@@ -1,5 +1,6 @@
-package io.github.regularcommands.converter;
+package io.github.regularcommands.util;
 
+import io.github.regularcommands.converter.ArgumentConverter;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
