@@ -20,7 +20,7 @@ public final class Validators {
         }
 
         return new ImmutablePair<>(false, "Only players can execute that command.");
-    }, false);
+    });
 
     public static CommandValidator CONSOLE_EXECUTOR = new CommandValidator((context, arguments) -> {
         if(context.getSender() instanceof ConsoleCommandSender) {
@@ -28,7 +28,7 @@ public final class Validators {
         }
 
         return new ImmutablePair<>(false, "Only consoles can execute that command.");
-    }, false);
+    });
 
     public static CommandValidator BLOCK_EXECUTOR = new CommandValidator((context, arguments) -> {
         if(context.getSender() instanceof BlockCommandSender) {
@@ -36,33 +36,5 @@ public final class Validators {
         }
 
         return new ImmutablePair<>(false, "Only command blocks can execute that command.");
-    }, false);
-
-    /**
-     * Creates a new validator that performs a range check on all of the arguments located at the provided indices.
-     * The arguments must be comparable.
-     * @param range The Range object used to validate
-     * @param checkIndices The indices to validate against. All indices must be within range
-     * @param <T> The type of object that we should expect to validate
-     * @return A new instance of CommandValidator acting on a range and an array of indices
-     */
-    public static <T extends Comparable<T>> CommandValidator newRangeValidator(Range<T> range, int... checkIndices) {
-        Objects.requireNonNull(range, "range cannot be null");
-        Objects.requireNonNull(checkIndices, "checkIndices cannot be null");
-        Validate.isTrue(checkIndices.length > 0);
-
-        return new CommandValidator((context, arguments) -> {
-            for(int index : checkIndices) {
-                //noinspection unchecked
-                T value = (T)arguments[index];
-
-                if(!range.contains(value)) {
-                    return new ImmutablePair<>(false, String.format("The provided value '%s' at index '%s' is not " +
-                            "within required range '%s'", value, index, range.toString()));
-                }
-            }
-
-            return new ImmutablePair<>(true, null);
-        });
-    }
+    });
 }

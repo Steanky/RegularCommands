@@ -3,6 +3,9 @@ package io.github.regularcommands.validator;
 import io.github.regularcommands.commands.Context;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+/**
+ * Functional interface defining an object that may test command context.
+ */
 public interface ValidationStep {
     /**
      * Defines a specific validation step.

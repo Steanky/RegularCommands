@@ -3,6 +3,7 @@ package io.github.regularcommands.commands;
 import io.github.regularcommands.completer.ArgumentCompleter;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.converter.Parameter;
+import io.github.regularcommands.converter.ParameterType;
 import io.github.regularcommands.util.Completers;
 import io.github.regularcommands.validator.CommandValidator;
 import org.apache.commons.lang3.ArrayUtils;
@@ -14,9 +15,9 @@ import java.util.Iterator;
 import java.util.Objects;
 
 /**
- * Defines a specific form of a command. Subclasses can define the action taken by the command when it is executed,
- * as well as the determine whether or not it should be executed based off of various conditions. CommandForm objects
- * are immutable.
+ * Defines a specific form of a command. Subclasses define the action taken by the command when it is executed, as well
+ * as the determine whether or not it should be executed based off of various conditions. CommandForm objects are
+ * immutable. They also implement the Iterable interface, which can be used to loop through their parameters.
  */
 public abstract class CommandForm implements Iterable<Parameter> {
     private final class ParameterIterator implements Iterator<Parameter> {
@@ -33,7 +34,6 @@ public abstract class CommandForm implements Iterable<Parameter> {
         }
     }
 
-
     private final String usage;
     private final Parameter[] parameters;
     private final PermissionData permissions;
@@ -43,11 +43,13 @@ public abstract class CommandForm implements Iterable<Parameter> {
     private final boolean optional;
 
     /**
-     * Creates a CommandForm. In general, each CommandForm object should perform one task or several closely related
-     * ones. Each CommandForm can be said to have a 'signature' that is defined by the provided Parameter array. Two
-     * different CommandForms can have 'signature overlap' where both can be executed given one set of inputs. In this case,
-     * both forms will be executed. The order in which they are run depends on the order that they were added - command
-     * forms added later will always be executed after forms added earlier.
+     * Creates a CommandForm.
+     *
+     * Each CommandForm can be said to have a 'signature' that is defined by the provided Parameter array. Two
+     * different CommandForms can have 'signature overlap' where both can be executed given one set of inputs.
+     * In this case, both forms will be executed. The order in which they are run depends on the order that they were
+     * added to their RegularCommand instance - command forms added later will always be executed after forms added
+     * earlier.
      *
      * The Parameter array is also validated to ensure some basic assumptions can be made about the signature. 'vararg'
      * parameters cannot appear before non-vararg parameters, optional and vararg parameters cannot be mixed, and finally
@@ -71,19 +73,24 @@ public abstract class CommandForm implements Iterable<Parameter> {
                 throw new IllegalArgumentException("varargs parameter must be the last parameter");
             }
 
-            if (value.isOptional()) {
-                optional = true;
-            } else if (value.isVararg()) {
-                if (optional) { //combining optional and varargs creates ambiguity problems
-                    throw new IllegalArgumentException("you cannot mix optional and varargs parameters");
-                }
+            switch (value.getType()) {
+                case OPTIONAL:
+                    optional = true;
+                    break;
+                case VARARG:
+                    if (optional) { //combining optional and varargs creates ambiguity problems
+                        throw new IllegalArgumentException("you cannot mix optional and varargs parameters");
+                    }
 
-                vararg = true;
-            } else {
-                reqLen++;
+                    vararg = true;
+                    break;
+                case STANDARD:
+                default:
+                    reqLen++;
+                    break;
             }
 
-            if (optional && !value.isOptional()) { //avoids more ambiguity problems
+            if (optional && value.getType() != ParameterType.OPTIONAL) { //avoids more ambiguity problems
                 throw new IllegalArgumentException("non-optional parameters cannot appear after optional parameters");
             }
         }
@@ -144,7 +151,7 @@ public abstract class CommandForm implements Iterable<Parameter> {
      * @return A MatchResult argument containing information about the match attempt
      */
     public MatchResult matches(String[] args) {
-        if(args.length == 0) {
+        if(args.length == 0) { //optimization for zero-length parameters
             boolean matches = parameters.length == 0;
             return new MatchResult(this, true, matches, matches ? ImmutableTriple.of(true,
                     ArrayUtils.EMPTY_OBJECT_ARRAY, null) : null);
@@ -161,8 +168,10 @@ public abstract class CommandForm implements Iterable<Parameter> {
         {
             Parameter parameter = parameters[Math.min(i, parameters.length - 1)];
             String input;
+            ParameterType parameterType = parameter.getType();
+
             if(i >= args.length) {
-                if(parameter.isOptional()) {
+                if(parameterType == ParameterType.OPTIONAL) {
                     input = parameter.getDefaultValue(); //parameter is optional and argument is not supplied
                 }
                 else {
@@ -173,7 +182,8 @@ public abstract class CommandForm implements Iterable<Parameter> {
                 input = args[i]; //take user argument when possible
             }
 
-            if(!parameter.getPattern().matcher(input).matches()) {
+            if((parameterType == ParameterType.SIMPLE && parameter.getMatch().equals(input)) ||
+                    !parameter.getPattern().matcher(input).matches()) {
                 return new MatchResult(this, true, false, null); //regex matching failed
             }
 
@@ -241,7 +251,7 @@ public abstract class CommandForm implements Iterable<Parameter> {
     /**
      * Gets the argument completer object that is used to tab complete an argument array that partially matches this
      * form.
-     * @return The tab completer to use
+     * @return The tab completer to use. If not overridden, defaults to Completers.PARAMETER_COMPLETER
      */
     public ArgumentCompleter getCompleter() {
         return Completers.PARAMETER_COMPLETER;

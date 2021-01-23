@@ -6,47 +6,30 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import java.util.Objects;
 
 /**
- * Used to validate against the command context. Can be chained with other validators to test complex scenarios in a
- * simple way. Validators chained last are checked first.
+ * Used to validate against the command context. Validators can 'depend' on the success of a single other validator,
+ * which will be executed first.
  */
 public class CommandValidator {
    private final ValidationStep step;
    private CommandValidator next;
-   private final boolean mutable;
 
    /**
-    * Creates a new CommandValidator instance with the specified mutability. Immutable validators will throw an
-    * exception if an attempt is made to chain another validator to this one.
-    * @param step The IValidationStep used by this validator
-    * @param mutable Whether or not this validator is mutable
+    * Creates a new CommandValidator instance that depends on the success of another validator, which will be tested
+    * first. If it fails, this CommandValidator will not execute.
+    * @param step The ValidationStep used by this validator. This is the code that will perform the actual, contextual
+    *             testing
+    * @param dependOn The CommandValidator whose success determines whether this instances gets tested or not
     */
-   public CommandValidator(ValidationStep step, boolean mutable) {
+   public CommandValidator(ValidationStep step, CommandValidator dependOn) {
       this.step = Objects.requireNonNull(step, "validation step cannot be null");
-      this.mutable = mutable;
    }
 
    /**
-    * Creates a new mutable CommandValidator instance.
-    * @param step The IValidationStep used by this validator
+    * Creates a new CommandValidator instance, which does not depend on any other validators.
+    * @param step The ValidationStep used by this validator
     */
    public CommandValidator(ValidationStep step) {
-      this(step, true);
-   }
-
-   /**
-    * Makes the execution of this validator 'dependent on' the success of the chained validator. This will throw
-    * an exception if the validator is immutable.
-    * @param add The CommandValidator that will be executed before this one
-    * @return The CommandValidator that was passed to the add parameter
-    */
-   public CommandValidator chain(CommandValidator add) {
-      if(mutable) {
-         next = add;
-         return add;
-      }
-      else {
-         throw new IllegalStateException("Cannot chain to immutable validators");
-      }
+      this(step, null);
    }
 
    /**

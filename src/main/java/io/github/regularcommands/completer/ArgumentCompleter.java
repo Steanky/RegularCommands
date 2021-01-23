@@ -7,42 +7,25 @@ import java.util.List;
 
 public class ArgumentCompleter {
     private final CompletionStep step;
-    private ArgumentCompleter next;
-    private final boolean mutable;
+    private final ArgumentCompleter depend;
 
     /**
-     * Creates a new ArgumentCompleter object with the specified CompletionStep and mutability. If the mutable field
-     * is set to false, this ArgumentCompleter instance will throw an exception if an attempt is made to chain another
-     * validator to it.
-     * @param step The argument completion step
-     * @param mutable Whether or not the ArgumentCompleter is mutable
+     * Creates a new ArgumentCompleter object with the specified CompletionStep, an ArgumentCompleter this instance
+     * should be chained to.
+     * @param step The completion step
+     * @param depend The ArgumentCompleter whose output will be added to this instance's
      */
-    public ArgumentCompleter(CompletionStep step, boolean mutable) {
+    public ArgumentCompleter(CompletionStep step, ArgumentCompleter depend) {
         this.step = step;
-        this.mutable = mutable;
+        this.depend = depend;
     }
 
     /**
-     * Creates a new mutable ArgumentCompleter object with the specified CompletionStep.
-     * @param step The argument completion step
+     * Creates a new ArgumentCompleter object with the specified CompletionStep.
+     * @param step The completion step
      */
     public ArgumentCompleter(CompletionStep step) {
-        this(step, true);
-    }
-
-    /**
-     * Makes this ArgumentCompleter execute another ArgumentCompleter (the result is additive).
-     * @param next The ArgumentCompleter that should execute before this one
-     * @return The ArgumentCompleter supplied to parameter 'next'
-     */
-    public ArgumentCompleter chain(ArgumentCompleter next) {
-        if(mutable) {
-            this.next = next;
-            return next;
-        }
-        else {
-            throw new IllegalStateException("Cannot chain to immutable ArgumentCompleters");
-        }
+        this(step, null);
     }
 
     /**
@@ -53,11 +36,11 @@ public class ArgumentCompleter {
      * @return A list of strings corresponding to potential completions, or null if there are none
      */
     public List<String> complete(Context context, CommandForm form, String[] args) {
-        if(next == null) {
+        if(depend == null) {
             return step.complete(context, form, args);
         }
 
-        List<String> nextResult = next.complete(context, form, args);
+        List<String> nextResult = depend.complete(context, form, args);
         List<String> result = step.complete(context, form, args);
 
         if(result != null) {
