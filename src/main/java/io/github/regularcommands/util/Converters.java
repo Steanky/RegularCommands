@@ -16,8 +16,6 @@ import java.util.Objects;
  * Utility class containing built-in converters and helper methods.
  */
 public final class Converters {
-    public final static ArgumentConverter<String> STRING_CONVERTER = argument -> ImmutableTriple.of(true, argument, null);
-
     public final static ArgumentConverter<BigDecimal> BIG_DECIMAL_CONVERTER = argument -> {
         ImmutablePair<Boolean, BigDecimal> conversionResult = tryParseBigDecimal(argument);
 

@@ -1,9 +1,9 @@
 package io.github.regularcommands.commands;
 
 import io.github.regularcommands.completer.ArgumentCompleter;
+import io.github.regularcommands.converter.ArgumentConverter;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.converter.Parameter;
-import io.github.regularcommands.converter.ParameterType;
 import io.github.regularcommands.util.Completers;
 import io.github.regularcommands.validator.CommandValidator;
 import org.apache.commons.lang3.ArrayUtils;
@@ -91,7 +91,7 @@ public abstract class CommandForm implements Iterable<Parameter> {
                     break;
             }
 
-            if (optional && value.getType() != ParameterType.OPTIONAL) { //avoids more ambiguity problems
+            if (optional && value.getType() != Parameter.ParameterType.OPTIONAL) { //avoids more ambiguity problems
                 throw new IllegalArgumentException("non-optional parameters cannot appear after optional parameters");
             }
         }
@@ -169,10 +169,10 @@ public abstract class CommandForm implements Iterable<Parameter> {
         {
             Parameter parameter = parameters[Math.min(i, parameters.length - 1)];
             String input;
-            ParameterType parameterType = parameter.getType();
+            Parameter.ParameterType parameterType = parameter.getType();
 
             if(i >= args.length) {
-                if(parameterType == ParameterType.OPTIONAL) {
+                if(parameterType == Parameter.ParameterType.OPTIONAL) {
                     input = parameter.getDefaultValue(); //parameter is optional and argument is not supplied
                 }
                 else {
@@ -184,12 +184,20 @@ public abstract class CommandForm implements Iterable<Parameter> {
             }
 
             //optimization: .equals() comparison for simple parameters
-            if((parameterType == ParameterType.SIMPLE && parameter.getMatch().equals(input)) ||
+            if((parameterType == Parameter.ParameterType.SIMPLE && parameter.getMatch().equals(input)) ||
                     !parameter.getPattern().matcher(input).matches()) {
                 return new MatchResult(this, true, false, null); //regex matching failed
             }
 
-            Triple<Boolean, Object, String> conversionResult = parameter.getConverter().convert(input);
+            ArgumentConverter<Object> converter = parameter.getConverter();
+            Triple<Boolean, Object, String> conversionResult;
+
+            if(converter == null) {
+                conversionResult = ImmutableTriple.of(true, input, null);
+            }
+            else {
+                conversionResult = parameter.getConverter().convert(input);
+            }
 
             if(conversionResult.getLeft()) { //successful conversion
                 result[i] = conversionResult.getMiddle();
