@@ -6,14 +6,24 @@ import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
 
 /**
- * Static utility class for holding builtin CommandValidators along with some factory methods.
+ * Static utility class. Contains several default CommandValidators that can be used to check against who is running
+ * the command (entity, player, console, or block).
  */
 public final class Validators {
+    public static CommandValidator ENTITY_EXECUTOR = new CommandValidator((context, arguments) -> {
+        if(context.getSender() instanceof Entity) {
+            return ImmutablePair.of(true, null);
+        }
+
+        return ImmutablePair.of(false, "Only entities can execute that command.");
+    });
+
     public static CommandValidator PLAYER_EXECUTOR = new CommandValidator((context, arguments) -> {
         if(context.getSender() instanceof Player) {
             return ImmutablePair.of(true, null);

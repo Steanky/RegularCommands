@@ -1,7 +1,6 @@
 package io.github.regularcommands.converter;
 
 import com.google.common.collect.Lists;
-import io.github.regularcommands.util.Converters;
 
 import java.util.ArrayList;
 import java.util.List;
