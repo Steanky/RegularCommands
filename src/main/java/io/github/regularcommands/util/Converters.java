@@ -4,6 +4,7 @@ import io.github.regularcommands.converter.ArgumentConverter;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Material;
 
@@ -17,90 +18,90 @@ import java.util.Objects;
  */
 public final class Converters {
     public final static ArgumentConverter<BigDecimal> BIG_DECIMAL_CONVERTER = argument -> {
-        ImmutablePair<Boolean, BigDecimal> conversionResult = tryParseBigDecimal(argument);
+        Pair<Boolean, BigDecimal> conversionResult = tryParseBigDecimal(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a BigDecimal.", argument));
     };
 
     public final static ArgumentConverter<BigInteger> BIG_INTEGER_CONVERTER = argument -> {
-        ImmutablePair<Boolean, BigInteger> conversionResult = tryParseBigInteger(argument);
+        Pair<Boolean, BigInteger> conversionResult = tryParseBigInteger(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a BigInteger.", argument));
     };
 
     public final static ArgumentConverter<Long> LONG_CONVERTER = argument -> {
-        ImmutablePair<Boolean, Long> conversionResult = tryParseLong(argument);
+        Pair<Boolean, Long> conversionResult = tryParseLong(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Long.", argument));
     };
 
     public final static ArgumentConverter<Integer> INTEGER_CONVERTER = argument -> {
-        ImmutablePair<Boolean, Integer> conversionResult = tryParseInt(argument);
+        Pair<Boolean, Integer> conversionResult = tryParseInt(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to an Integer.", argument));
     };
 
     public final static ArgumentConverter<Double> DOUBLE_CONVERTER = argument -> {
-        ImmutablePair<Boolean, Double> conversionResult = tryParseDouble(argument);
+        Pair<Boolean, Double> conversionResult = tryParseDouble(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Double.", argument));
     };
 
     public final static ArgumentConverter<Float> FLOAT_CONVERTER = argument -> {
-        ImmutablePair<Boolean, Float> conversionResult = tryParseFloat(argument);
+        Pair<Boolean, Float> conversionResult = tryParseFloat(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Float.", argument));
     };
 
     public final static ArgumentConverter<Short> SHORT_CONVERTER = argument -> {
-        ImmutablePair<Boolean, Short> conversionResult = tryParseShort(argument);
+        Pair<Boolean, Short> conversionResult = tryParseShort(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Short.", argument));
     };
 
     public final static ArgumentConverter<Byte> BYTE_CONVERTER = argument -> {
-        ImmutablePair<Boolean, Byte> conversionResult = tryParseByte(argument);
+        Pair<Boolean, Byte> conversionResult = tryParseByte(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Byte.", argument));
     };
 
     public final static ArgumentConverter<Boolean> BOOLEAN_CONVERTER = argument -> {
-        ImmutablePair<Boolean, Boolean> conversionResult = tryParseBoolean(argument);
+        Pair<Boolean, Boolean> conversionResult = tryParseBoolean(argument);
 
-        if(conversionResult.left) {
-            return ImmutableTriple.of(true, conversionResult.right, null);
+        if(conversionResult.getLeft()) {
+            return ImmutableTriple.of(true, conversionResult.getRight(), null);
         }
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Boolean.", argument));
@@ -170,7 +171,7 @@ public final class Converters {
     }
 
 
-    private static ImmutablePair<Boolean, BigDecimal> tryParseBigDecimal(String value) {
+    private static Pair<Boolean, BigDecimal> tryParseBigDecimal(String value) {
         try {
             return ImmutablePair.of(true, new BigDecimal(value));
         }
@@ -179,7 +180,7 @@ public final class Converters {
         }
     }
 
-    private static ImmutablePair<Boolean, BigInteger> tryParseBigInteger(String value) {
+    private static Pair<Boolean, BigInteger> tryParseBigInteger(String value) {
         try {
             return ImmutablePair.of(true, new BigInteger(value));
         }
@@ -188,7 +189,7 @@ public final class Converters {
         }
     }
 
-    private static ImmutablePair<Boolean, Long> tryParseLong(String value) {
+    private static Pair<Boolean, Long> tryParseLong(String value) {
         try {
             return ImmutablePair.of(true, Long.parseLong(value));
         }
@@ -197,7 +198,7 @@ public final class Converters {
         }
     }
 
-    private static ImmutablePair<Boolean, Integer> tryParseInt(String value) {
+    private static Pair<Boolean, Integer> tryParseInt(String value) {
         try {
             return ImmutablePair.of(true, Integer.parseInt(value));
         }
@@ -206,7 +207,7 @@ public final class Converters {
         }
     }
 
-    private static ImmutablePair<Boolean, Double> tryParseDouble(String value) {
+    private static Pair<Boolean, Double> tryParseDouble(String value) {
         try {
             return ImmutablePair.of(true, Double.parseDouble(value));
         }
@@ -215,7 +216,7 @@ public final class Converters {
         }
     }
 
-    private static ImmutablePair<Boolean, Float> tryParseFloat(String value) {
+    private static Pair<Boolean, Float> tryParseFloat(String value) {
         try {
             return ImmutablePair.of(true, Float.parseFloat(value));
         }
@@ -224,7 +225,7 @@ public final class Converters {
         }
     }
 
-    private static ImmutablePair<Boolean, Short> tryParseShort(String value) {
+    private static Pair<Boolean, Short> tryParseShort(String value) {
         try {
             return ImmutablePair.of(true, Short.parseShort(value));
         }
@@ -233,7 +234,7 @@ public final class Converters {
         }
     }
 
-    private static ImmutablePair<Boolean, Byte> tryParseByte(String value) {
+    private static Pair<Boolean, Byte> tryParseByte(String value) {
         try {
             return ImmutablePair.of(true, Byte.parseByte(value));
         }
@@ -242,7 +243,7 @@ public final class Converters {
         }
     }
 
-    private static ImmutablePair<Boolean, Boolean> tryParseBoolean(String value) {
+    private static Pair<Boolean, Boolean> tryParseBoolean(String value) {
         if(value.equalsIgnoreCase("true")) {
             return ImmutablePair.of(true, true);
         }

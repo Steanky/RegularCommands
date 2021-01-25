@@ -1,6 +1,7 @@
 package io.github.regularcommands.stylize;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
 import org.apache.commons.lang.Validate;
 
 import java.util.*;

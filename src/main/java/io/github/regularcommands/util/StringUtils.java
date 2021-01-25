@@ -63,7 +63,9 @@ public final class StringUtils {
         Objects.requireNonNull(input, "input cannot be null");
         StringBuilder builder = new StringBuilder();
 
-        for(char character : input.toCharArray()) {
+
+        for(int i = 0; i < input.length(); i++) {
+            char character = input.charAt(i);
             switch(character) {
                 case '{':
                 case '}':

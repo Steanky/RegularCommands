@@ -91,7 +91,7 @@ public abstract class RegularCommand {
      * @param sender The CommandSender that is attempting to tab complete
      * @param args The current argument list, which may be partially or fully completed but should never be null or an
      *             empty array
-     * @return A list containing tab completions, or null if none are found
+     * @return A list containing tab completions, or an empty list if none exist
      */
     protected List<String> getCompletions(CommandManager manager, CommandSender sender, String[] args) {
         List<String> possibleCompletions = new ArrayList<>();
@@ -110,6 +110,6 @@ public abstract class RegularCommand {
             }
         }
 
-        return possibleCompletions.size() == 0 ? null : possibleCompletions;
+        return possibleCompletions;
     }
 }

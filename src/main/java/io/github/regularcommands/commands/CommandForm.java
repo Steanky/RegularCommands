@@ -68,8 +68,7 @@ public abstract class CommandForm implements Iterable<Parameter> {
         boolean vararg = false;
         int reqLen = 0;
 
-        //validate parameter array
-        for (Parameter value : parameters) {
+        for (Parameter value : parameters) { //validate parameter array
             if (vararg) { //can't have varargs before non-varargs
                 throw new IllegalArgumentException("varargs parameter must be the last parameter");
             }
@@ -158,6 +157,7 @@ public abstract class CommandForm implements Iterable<Parameter> {
                     ArrayUtils.EMPTY_OBJECT_ARRAY, null) : null);
         }
 
+        //optimization, don't bother testing if we are above or below the required length for this form
         if(args.length < requiredLength || args.length > parameters.length && !vararg) {
             return new MatchResult(this, true, false, null);
         }
@@ -168,8 +168,8 @@ public abstract class CommandForm implements Iterable<Parameter> {
         for(int i = 0; i < iters; i++)
         {
             Parameter parameter = parameters[Math.min(i, parameters.length - 1)];
-            String input;
             Parameter.ParameterType parameterType = parameter.getType();
+            String input;
 
             if(i >= args.length) {
                 if(parameterType == Parameter.ParameterType.OPTIONAL) {
@@ -184,9 +184,10 @@ public abstract class CommandForm implements Iterable<Parameter> {
             }
 
             //optimization: .equals() comparison for simple parameters
-            if((parameterType == Parameter.ParameterType.SIMPLE && parameter.getMatch().equals(input)) ||
+            if((parameterType == Parameter.ParameterType.SIMPLE && !parameter.getMatch().equals(input)) ||
                     !parameter.getPattern().matcher(input).matches()) {
-                return new MatchResult(this, true, false, null); //regex matching failed
+                //equality or regex match failed
+                return new MatchResult(this, true, false, null);
             }
 
             ArgumentConverter<Object> converter = parameter.getConverter();
@@ -203,8 +204,8 @@ public abstract class CommandForm implements Iterable<Parameter> {
                 result[i] = conversionResult.getMiddle();
             }
             else { //failed conversion
-                return new MatchResult(this, true, true, ImmutableTriple.of(false, null,
-                        conversionResult.getRight()));
+                return new MatchResult(this, true, true, ImmutableTriple.of(false,
+                        null, conversionResult.getRight()));
             }
         }
 

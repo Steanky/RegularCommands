@@ -2,6 +2,7 @@ package io.github.regularcommands.validator;
 
 import io.github.regularcommands.commands.Context;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
 
@@ -40,13 +41,13 @@ public class CommandValidator {
     * @return An ImmutablePair object whose left object indicates the success of the validation and whose right object
     * contains a user-friendly error message that should be null if the left boolean is true
     */
-   public ImmutablePair<Boolean, String> validate(Context context, Object[] arguments) {
+   public Pair<Boolean, String> validate(Context context, Object[] arguments) {
       if(next == null) {
          return step.validate(context, arguments);
       }
 
-      ImmutablePair<Boolean, String> result = next.validate(context, arguments);
-      if(result.left) {
+      Pair<Boolean, String> result = next.validate(context, arguments);
+      if(result.getLeft()) {
          return step.validate(context, arguments);
       }
 

@@ -5,10 +5,10 @@ import io.github.regularcommands.stylize.ComponentSettings;
 import io.github.regularcommands.stylize.TextStylizer;
 import io.github.regularcommands.validator.CommandValidator;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -84,30 +84,17 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * @param message The message to send
      */
     public void sendStylizedMessage(Player player, String message) {
-        Triple<Boolean, TextComponent[], String> result = stylize(message);
-        if(result.getLeft()) {
-            player.spigot().sendMessage(result.getMiddle());
-        }
-        else {
-            sendErrorMessage(player, result.getRight());
-        }
+        player.spigot().sendMessage(parseStylizedMessage(message));
     }
 
     /**
      * Broadcasts the formatted message to the entire server, which will be stylized according to the same rules as text
-     * returned from CommandForm. This should never be called from an asynchronous context, as it will likely corrupt
+     * returned from a CommandForm. This should never be called from an asynchronous context, as it will likely corrupt
      * the internal buffer used for parsing input.
      * @param message The message to broadcast
      */
     public void broadcastStylizedMessage(String message) {
-        Triple<Boolean, TextComponent[], String> result = stylize(message);
-        if(result.getLeft()) {
-            plugin.getServer().spigot().broadcast(result.getMiddle());
-        }
-        else {
-            logger.warning(String.format("Stylization error occured when attempting to broadcast a message: %s",
-                    result.getRight()));
-        }
+        plugin.getServer().spigot().broadcast(parseStylizedMessage(message));
     }
 
     @Override
@@ -137,19 +124,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
                                 if(output != null) { //we have something to display
                                     if(form.canStylize()) { //stylize if we can
-                                        Triple<Boolean, TextComponent[], String> stylizationResult =
-                                                stylize(output);
-
-                                        if(stylizationResult.getLeft()) { //send stylized output
-                                            commandSender.spigot().sendMessage(stylizationResult.getMiddle());
-                                        }
-                                        else { //send stylization error message
-                                            logger.warning(String.format("A stylizer error occurred when '%s' " +
-                                                            "executed command '%s': %s", commandSender.getName(),
-                                                    command.getName(), stylizationResult.getRight()));
-
-                                            sendErrorMessage(commandSender, stylizationResult.getRight());
-                                        }
+                                        //let BadFormatExceptions propagate! they are the fault of the library user
+                                        commandSender.spigot().sendMessage(parseStylizedMessage(output));
                                     }
                                     else { //send raw output because this command doesn't support stylization
                                         commandSender.sendMessage(output);
@@ -191,8 +167,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             RegularCommand regularCommand = commands.get(command.getName());
 
             if(regularCommand != null) {
-                List<String> completions = regularCommand.getCompletions(this, commandSender, parse(args));
-                return completions == null ? EMPTY_STRING_LIST : completions;
+                return regularCommand.getCompletions(this, commandSender, parse(args));
             }
         }
 
@@ -249,7 +224,26 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         return result.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
     }
 
-    private Triple<Boolean, TextComponent[], String> stylize(String input) {
+    /**
+     * Converts an input string into an array of TextComponents using RegularCommand's formatting rules, which are
+     * defined as follows:
+     *
+     * >modifiers{text} unaffected-text >more-modifiers|additional-modifier{more-text}
+     *
+     * For example, the following would appear as red, underlined text:
+     *
+     * >red|underlined{This text is red and underlined.}
+     *
+     * This engine supports all of Minecraft's built-in effects. Custom ones, including embedded links and other
+     * advanced features, can be registered via this manager's TextStylizer.
+     *
+     * If the format is syntactically invalid, a BadFormatException will be thrown. It is recommended to run user input
+     * through StringUtils#escapify before passing it through this function, as it will properly escape any special
+     * characters.
+     * @param input The input text
+     * @return An array of TextComponents.
+     */
+    public TextComponent[] parseStylizedMessage(String input) {
         BUFFER.setLength(0);
 
         List<TextComponent> components = new ArrayList<>();
@@ -258,19 +252,20 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         boolean escape = false;
         boolean name = false;
         boolean component = false;
-        int index = 0;
-        for(char character : input.toCharArray()) {
+        int i = 0;
+        for(; i < input.length(); i++) {
+            char character = input.charAt(i);
             switch (character) {
                 case '{':
                     if(!escape) {
                         if(component) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped curly " +
-                                    "bracket (nested groups are not allowed).", input, index));
+                            throw new BadFormatException(formatStylizerError("Unescaped curly " +
+                                    "bracket (nested groups are not allowed).", input, i));
                         }
 
                         if(!name) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Format groups " +
-                                    "must specify at least one valid formatter name.", input, index));
+                            throw new BadFormatException(formatStylizerError("Format groups " +
+                                    "must specify at least one valid formatter name.", input, i));
                         }
 
                         if(BUFFER.length() > 0) {
@@ -285,13 +280,13 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                 BUFFER.setLength(0);
                             }
                             else {
-                                return ImmutableTriple.of(false, null, formatStylizerError("Formatter '" +
-                                        formatterName + "' does not exist.", input, index));
+                                throw new BadFormatException(formatStylizerError("Formatter '" + formatterName +
+                                        "' does not exist.", input, i));
                             }
                         }
                         else {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Format groups " +
-                                    "must specify at least one valid formatter name.", input, index));
+                            throw new BadFormatException(formatStylizerError("Format groups " +
+                                    "must specify at least one valid formatter name.", input, i));
                         }
                     }
                     else {
@@ -302,13 +297,13 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 case '}':
                     if(!escape) {
                         if(name) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped " +
-                                    "close bracket in name specifier.", input, index));
+                            throw new BadFormatException(formatStylizerError("Unescaped " +
+                                    "close bracket in name specifier.", input, i));
                         }
 
                         if(!component) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped " +
-                                    "close bracket in non-component region.", input, index));
+                            throw new BadFormatException(formatStylizerError("Unescaped close bracket in " +
+                                    "non-component region.", input, i));
                         }
 
                         if(componentFormatters.size() > 0) {
@@ -325,8 +320,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                             BUFFER.setLength(0);
                         }
                         else {
-                            return ImmutableTriple.of(false, null, formatStylizerError("You must " +
-                                    "specify at least one formatter.", input, index));
+                            throw new BadFormatException(formatStylizerError("You must specify at least one " +
+                                    "formatter.", input, i));
                         }
                     }
                     else {
@@ -337,13 +332,13 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 case '>':
                     if(!escape) {
                         if(name) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped " +
-                                    "name specifier token in name specifier.", input, index));
+                            throw new BadFormatException(formatStylizerError("Unescaped name specifier token " +
+                                    "in already present name specifier.", input, i));
                         }
 
                         if(component) {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unescaped " +
-                                    "name specifier token in component (nested components are not allowed).", input, index));
+                            throw new BadFormatException(formatStylizerError("Unescaped name specifier token " +
+                                    "in component (nested components are not allowed).", input, i));
                         }
 
                         if(BUFFER.length() > 0) {
@@ -379,18 +374,18 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                     BUFFER.setLength(0);
                                 }
                                 else {
-                                    return ImmutableTriple.of(false, null, formatStylizerError("Formatter" +
-                                            " '" + formatterName + "' does not exist.", input, index));
+                                    throw new BadFormatException(formatStylizerError("Formatter '" +
+                                            formatterName + "' does not exist or has not been registered.", input, i));
                                 }
                             }
                             else {
-                                return ImmutableTriple.of(false, null, formatStylizerError("Invalid " +
-                                        "component formatter name; cannot be an empty string.", input, index));
+                                throw new BadFormatException(formatStylizerError("Invalid component formatter " +
+                                        "name; cannot be an empty string.", input, i));
                             }
                         }
                         else {
-                            return ImmutableTriple.of(false, null, formatStylizerError("Unexpected " +
-                                    "formatter name delimiter.", input, index));
+                            throw new BadFormatException(formatStylizerError("Unexpected formatter name " +
+                                    "delimiter.", input, i));
                         }
                     }
                     else {
@@ -403,29 +398,31 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                     escape = false;
                     break;
             }
-            index++;
+            i++;
         }
 
         if(name) {
-            return ImmutableTriple.of(false, null, formatStylizerError("Unfinished format name specifier.",
-                    input, index));
+            throw new BadFormatException(formatStylizerError("Unfinished format name specifier.", input, i));
         }
 
         if(component) {
-            return ImmutableTriple.of(false, null, formatStylizerError("Unfinished text component.", input,
-                    index));
+            throw new BadFormatException(formatStylizerError("Unfinished text component.", input, i));
         }
 
         if(BUFFER.length() > 0) {
             components.add(new TextComponent(BUFFER.toString()));
         }
 
-        return ImmutableTriple.of(true, components.toArray(EMPTY_TEXT_COMPONENT_ARRAY), null);
+        return components.toArray(EMPTY_TEXT_COMPONENT_ARRAY);
     }
 
     private String formatStylizerError(String message, String inputString, int currentIndex) {
-        return message + " @['" + inputString.substring(Math.max(currentIndex - 10, Math.min(currentIndex + 10,
-                inputString.length()))) + "'], string index " + currentIndex + ".";
+        if(message == null || message.length() == 0) {
+            return "Stylization error: empty or null message";
+        }
+
+        return "Stylization error: " + message + " ~@['" + inputString.substring(Math.max(currentIndex - 10, 0),
+                Math.min(currentIndex + 10, inputString.length())) + "'], string index " + currentIndex + ".";
     }
 
     private void sendErrorMessage(CommandSender sender, String text) {
