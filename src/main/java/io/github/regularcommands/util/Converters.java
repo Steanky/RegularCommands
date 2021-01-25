@@ -1,5 +1,6 @@
 package io.github.regularcommands.util;
 
+import io.github.regularcommands.commands.CommandManager;
 import io.github.regularcommands.converter.ArgumentConverter;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -116,18 +117,6 @@ public final class Converters {
 
         return ImmutableTriple.of(false, null, String.format("The provided value '%s' cannot be converted to a Material.", argument));
     };
-
-    /**
-     * Converts any generic IArgumentConverter into an IArgumentConverter of generic type Object.
-     * @param original The IArgumentConverter to convert
-     * @return An IArgumentConverter of generic type Object
-     */
-    public static ArgumentConverter<Object> asObjectConverter(ArgumentConverter<?> original) {
-        return argument -> {
-            Triple<Boolean, ?, String> originalConversion = original.convert(argument);
-            return ImmutableTriple.of(originalConversion.getLeft(), originalConversion.getMiddle(), originalConversion.getRight());
-        };
-    }
 
     /**
      * Creates an ArgumentConverter that can convert an input sequence into an array, given an ArgumentConverter

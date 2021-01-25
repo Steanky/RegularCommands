@@ -66,7 +66,8 @@ public class Parameter {
                 break;
         }
 
-        this.converter = converter == null ? null : Converters.asObjectConverter(converter);
+        //noinspection unchecked
+        this.converter = converter == null ? null : (ArgumentConverter<Object>) converter;
         this.type = type;
         this.defaultValue = defaultValue;
     }

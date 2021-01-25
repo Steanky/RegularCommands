@@ -5,11 +5,9 @@ import io.github.regularcommands.stylize.ComponentSettings;
 import io.github.regularcommands.stylize.TextStylizer;
 import io.github.regularcommands.validator.CommandValidator;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.command.*;
@@ -228,18 +226,18 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * Converts an input string into an array of TextComponents using RegularCommand's formatting rules, which are
      * defined as follows:
      *
-     * >modifiers{text} unaffected-text >more-modifiers|additional-modifier{more-text}
+     * <p>&gt;modifiers{text} unaffected-text &gt;more-modifiers|additional-modifier{more-text}</p>
      *
-     * For example, the following would appear as red, underlined text:
+     * <p>For example, the following would appear as red, underlined text:</p>
      *
-     * >red|underlined{This text is red and underlined.}
+     * <p>&gt;red|underlined{This text is red and underlined.}</p>
      *
-     * This engine supports all of Minecraft's built-in effects. Custom ones, including embedded links and other
-     * advanced features, can be registered via this manager's TextStylizer.
+     * <p>This engine supports all of Minecraft's built-in effects. Custom ones, including embedded links and other
+     * advanced features, can be registered via this manager's TextStylizer.</p>
      *
-     * If the format is syntactically invalid, a BadFormatException will be thrown. It is recommended to run user input
+     * <p>If the format is syntactically invalid, a BadFormatException will be thrown. It is recommended to run user input
      * through StringUtils#escapify before passing it through this function, as it will properly escape any special
-     * characters.
+     * characters.</p>
      * @param input The input text
      * @return An array of TextComponents.
      */
