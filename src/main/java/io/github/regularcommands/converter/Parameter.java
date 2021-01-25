@@ -73,7 +73,7 @@ public class Parameter {
     }
 
     /**
-     * Creates a new optional parameter with the specified definition and usage.
+     * Creates a new optional parameter.
      * @param regex The regex used to match this parameter
      * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
      *              formatted something like this:
@@ -95,7 +95,7 @@ public class Parameter {
     }
 
     /**
-     * Creates a new optional parameter with the specified definition and usage.
+     * Creates a new optional parameter.
      * @param regex The regex used to match this parameter
      * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
      *              formatted something like this:
@@ -114,7 +114,7 @@ public class Parameter {
     }
 
     /**
-     * Creates a new optional parameter with the specified definition and usage.
+     * Creates a new optional parameter.
      * @param regex The regex used to match this parameter
      * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
      *              formatted something like this:
@@ -132,7 +132,7 @@ public class Parameter {
     }
 
     /**
-     * Creates a new vararg or standard parameter with the specified definition and usage.
+     * Creates a new vararg or standard parameter.
      * @param regex The regex used to match this parameter
      * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
      *              formatted something like this:
@@ -155,7 +155,27 @@ public class Parameter {
     }
 
     /**
-     * Creates a new vararg or standard parameter with the specified definition and usage.
+     * Creates new a standard parameter.
+     * @param regex The regex used to match this parameter
+     * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
+     *              formatted something like this:
+     *
+     *              [example-name]
+     *              [example_name]
+     *              [test name]
+     *
+     *              Parameter usages are delimited by spaces. Include brackets or quotation marks to avoid confusing
+     *              users.
+     * @param converter The converter that will be used to convert user input
+     * @param staticCompletionOptions A list of completion options that will appear when a user tries to tab complete
+     *                                on this parameter
+     */
+    public Parameter(String regex, String usage, ArgumentConverter<?> converter, List<String> staticCompletionOptions) {
+        this(regex, usage, null, converter, staticCompletionOptions, ParameterType.STANDARD);
+    }
+
+    /**
+     * Creates a new vararg or standard parameter.
      * @param regex The regex used to match this parameter
      * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
      *              formatted something like this:
@@ -175,7 +195,25 @@ public class Parameter {
     }
 
     /**
-     * Creates a new vararg or standard parameter with the specified definition and usage.
+     * Creates a standard parameter.
+     * @param regex The regex used to match this parameter
+     * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
+     *              formatted something like this:
+     *
+     *              [example-name]
+     *              [example_name]
+     *              [test name]
+     *
+     *              Parameter usages are delimited by spaces. Include brackets or quotation marks to avoid confusing
+     *              users.
+     * @param converter The converter that will be used to convert user input
+     */
+    public Parameter(String regex, String usage, ArgumentConverter<?> converter) {
+        this(regex, usage, null, converter, null, ParameterType.STANDARD);
+    }
+
+    /**
+     * Creates a new vararg or standard parameter.
      * @param regex The regex used to match this parameter
      * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
      *              formatted something like this:
@@ -194,7 +232,7 @@ public class Parameter {
     }
 
     /**
-     * Creates a new standard parameter with the specified definition and usage.
+     * Creates a new standard parameter.
      * @param regex The regex used to match this parameter
      * @param usage The usage of this parameter, which should explain what the parameter does in a few words. Should be
      *              formatted something like this:
@@ -211,7 +249,7 @@ public class Parameter {
     }
 
     /**
-     * Creates a new simple parameter that will use an equality comparison rather than a regex for matching arguments,
+     * Creates a new simple parameter.
      * along with a converter to convert user input.
      * @param match The exact string to match, which is case-sensitive
      * @param converter The converter used to convert this argument
@@ -221,7 +259,7 @@ public class Parameter {
     }
 
     /**
-     * Creates a new simple parameter that will use an equality comparison rather than a regex for matching arguments.
+     * Creates a new simple parameter.
      * @param match The exact string to match, which is case-sensitive
      */
     public Parameter(String match) {
