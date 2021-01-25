@@ -9,6 +9,7 @@ import io.github.regularcommands.validator.CommandValidator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -182,19 +183,20 @@ public abstract class CommandForm implements Iterable<Parameter> {
                 input = args[i]; //take user argument when possible
             }
 
+            //optimization: .equals() comparison for simple parameters
             if((parameterType == ParameterType.SIMPLE && parameter.getMatch().equals(input)) ||
                     !parameter.getPattern().matcher(input).matches()) {
                 return new MatchResult(this, true, false, null); //regex matching failed
             }
 
-            ImmutableTriple<Boolean, Object, String> conversionResult = parameter.getConverter().convert(input);
+            Triple<Boolean, Object, String> conversionResult = parameter.getConverter().convert(input);
 
-            if(conversionResult.left) { //successful conversion
-                result[i] = conversionResult.middle;
+            if(conversionResult.getLeft()) { //successful conversion
+                result[i] = conversionResult.getMiddle();
             }
             else { //failed conversion
                 return new MatchResult(this, true, true, ImmutableTriple.of(false, null,
-                        conversionResult.right));
+                        conversionResult.getRight()));
             }
         }
 

@@ -10,6 +10,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,7 +35,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
     /**
      * Creates a new CommandManager and associates it with the specified plugin.
-     * @param plugin The attached plugin
+     * @param plugin The associated plugin
      */
     public CommandManager(JavaPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin, "plugin cannot be null");
@@ -82,12 +84,12 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * @param message The message to send
      */
     public void sendStylizedMessage(Player player, String message) {
-        ImmutableTriple<Boolean, TextComponent[], String> result = stylize(message);
-        if(result.left) {
-            player.spigot().sendMessage(result.middle);
+        Triple<Boolean, TextComponent[], String> result = stylize(message);
+        if(result.getLeft()) {
+            player.spigot().sendMessage(result.getMiddle());
         }
         else {
-            sendErrorMessage(player, result.right);
+            sendErrorMessage(player, result.getRight());
         }
     }
 
@@ -98,13 +100,13 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * @param message The message to broadcast
      */
     public void broadcastStylizedMessage(String message) {
-        ImmutableTriple<Boolean, TextComponent[], String> result = stylize(message);
-        if(result.left) {
-            plugin.getServer().spigot().broadcast(result.middle);
+        Triple<Boolean, TextComponent[], String> result = stylize(message);
+        if(result.getLeft()) {
+            plugin.getServer().spigot().broadcast(result.getMiddle());
         }
         else {
             logger.warning(String.format("Stylization error occured when attempting to broadcast a message: %s",
-                    result.right));
+                    result.getRight()));
         }
     }
 
@@ -118,35 +120,35 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             if(matches.size() > 0) {
                 for(MatchResult match : matches) { //loop all matches
                     if(match.hasPermission()) { //test permissions first
-                        ImmutableTriple<Boolean, Object[], String> conversionResult = match.getConversionResult();
+                        Triple<Boolean, Object[], String> conversionResult = match.getConversionResult();
 
-                        if(conversionResult.left) { //conversion was a success
+                        if(conversionResult.getLeft()) { //conversion was a success
                             CommandForm form = match.getForm();
                             Context context = new Context(this, commandSender);
-                            CommandValidator validator = form.getValidator(context, conversionResult.middle);
-                            ImmutablePair<Boolean, String> validationResult = null;
+                            CommandValidator validator = form.getValidator(context, conversionResult.getMiddle());
+                            Pair<Boolean, String> validationResult = null;
 
                             if(validator != null) {
-                                validationResult = validator.validate(context, conversionResult.middle);
+                                validationResult = validator.validate(context, conversionResult.getMiddle());
                             }
 
-                            if(validator == null || validationResult.left) {
-                                String output = form.execute(context, conversionResult.middle);
+                            if(validator == null || validationResult.getLeft()) {
+                                String output = form.execute(context, conversionResult.getMiddle());
 
                                 if(output != null) { //we have something to display
                                     if(form.canStylize()) { //stylize if we can
-                                        ImmutableTriple<Boolean, TextComponent[], String> stylizationResult =
+                                        Triple<Boolean, TextComponent[], String> stylizationResult =
                                                 stylize(output);
 
-                                        if(stylizationResult.left) { //send stylized output
-                                            commandSender.spigot().sendMessage(stylizationResult.middle);
+                                        if(stylizationResult.getLeft()) { //send stylized output
+                                            commandSender.spigot().sendMessage(stylizationResult.getMiddle());
                                         }
                                         else { //send stylization error message
                                             logger.warning(String.format("A stylizer error occurred when '%s' " +
                                                             "executed command '%s': %s", commandSender.getName(),
-                                                    command.getName(), stylizationResult.right));
+                                                    command.getName(), stylizationResult.getRight()));
 
-                                            sendErrorMessage(commandSender, stylizationResult.right);
+                                            sendErrorMessage(commandSender, stylizationResult.getRight());
                                         }
                                     }
                                     else { //send raw output because this command doesn't support stylization
@@ -155,11 +157,11 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                 }
                             }
                             else { //validation error
-                                sendErrorMessage(commandSender, validationResult.right);
+                                sendErrorMessage(commandSender, validationResult.getRight());
                             }
                         }
                         else { //conversion error
-                            sendErrorMessage(commandSender, conversionResult.right);
+                            sendErrorMessage(commandSender, conversionResult.getRight());
                         }
                     }
                     else { //sender does not have the required permissions
@@ -247,7 +249,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         return result.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
     }
 
-    private ImmutableTriple<Boolean, TextComponent[], String> stylize(String input) {
+    private Triple<Boolean, TextComponent[], String> stylize(String input) {
         BUFFER.setLength(0);
 
         List<TextComponent> components = new ArrayList<>();

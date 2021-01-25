@@ -25,6 +25,10 @@ public class Parameter {
                       List<String> staticCompletionOptions, ParameterType type) {
         switch (type) {
             case SIMPLE:
+                if(definition == null) {
+                    throw new IllegalArgumentException("definition cannot be null for ParameterType.SIMPLE");
+                }
+
                 this.pattern = null;
                 this.match = definition;
                 this.usage = usage == null ? '[' + definition + ']' : usage;
@@ -32,8 +36,7 @@ public class Parameter {
                 break;
             case OPTIONAL:
                 if(defaultValue == null) {
-                    throw new IllegalArgumentException("when using ParameterType.OPTIONAL, must supply non-null " +
-                            "default value");
+                    throw new IllegalArgumentException("defaultValue cannot be null for ParameterType.OPTIONAL");
                 }
             case STANDARD:
             case VARARG:
@@ -85,6 +88,10 @@ public class Parameter {
         this(definition, null, null, null, null, type);
     }
 
+    /**
+     * Creates a new simple parameter that will use an equality comparison rather than a regex for matching arguments.
+     * @param match The exact string to match, which is case-sensitive
+     */
     public Parameter(String match) {
         this(match, null, null, null, null, ParameterType.SIMPLE);
     }

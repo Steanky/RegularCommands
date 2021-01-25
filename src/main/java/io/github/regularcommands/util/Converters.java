@@ -4,6 +4,7 @@ import io.github.regularcommands.converter.ArgumentConverter;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Material;
 
 import java.lang.reflect.Array;
@@ -124,8 +125,8 @@ public final class Converters {
      */
     public static ArgumentConverter<Object> asObjectConverter(ArgumentConverter<?> original) {
         return argument -> {
-            ImmutableTriple<Boolean, ?, String> originalConversion = original.convert(argument);
-            return ImmutableTriple.of(originalConversion.left, originalConversion.middle, originalConversion.right);
+            Triple<Boolean, ?, String> originalConversion = original.convert(argument);
+            return ImmutableTriple.of(originalConversion.getLeft(), originalConversion.getMiddle(), originalConversion.getRight());
         };
     }
 
@@ -134,39 +135,39 @@ public final class Converters {
      * that is capable of converting individual arguments, and a delimiter to split the input string.
      * @param elementConverter The converter that will convert each element
      * @param delimiter The delimiter used to split up the input string
-     * @param emptyArray An empty array
+     * @param arrayType The type of the array
      * @param <T> The type of argument we're trying to convert
      * @return An argument converter capable of transforming an input string into an array
      */
     public static <T> ArgumentConverter<T[]> newArrayConverter(ArgumentConverter<T> elementConverter, String delimiter,
-                                                               T[] emptyArray) {
+                                                               Class<T> arrayType) {
         Objects.requireNonNull(elementConverter, "element converter cannot be null");
         Objects.requireNonNull(delimiter, "delimiter cannot be null");
-        Objects.requireNonNull(emptyArray, "emptyArray cannot be null");
-        Validate.isTrue(emptyArray.length == 0, "emptyArray must be empty");
+        Objects.requireNonNull(arrayType, "arrayType cannot be null");
 
         return argument -> {
             String[] components = argument.split(delimiter);
             if(components.length == 0) {
-                return new ImmutableTriple<>(true, emptyArray, null);
+                //noinspection unchecked
+                return ImmutableTriple.of(true, (T[])Array.newInstance(arrayType, 0), null);
             }
 
             //noinspection unchecked
-            T[] resultingArray = (T[])Array.newInstance(emptyArray.getClass().getComponentType(), components.length);
+            T[] resultingArray = (T[])Array.newInstance(arrayType, components.length);
 
             for(int i = 0; i < components.length; i++) {
                 String component = components[i];
-                ImmutableTriple<Boolean, T, String> result = elementConverter.convert(component);
+                Triple<Boolean, T, String> result = elementConverter.convert(component);
 
-                if(result.left) {
-                    resultingArray[i] = result.middle;
+                if(result.getLeft()) {
+                    resultingArray[i] = result.getMiddle();
                 }
                 else {
-                    return new ImmutableTriple<>(false, null, result.right);
+                    return ImmutableTriple.of(false, null, result.getRight());
                 }
             }
 
-            return new ImmutableTriple<>(true, resultingArray, null);
+            return ImmutableTriple.of(true, resultingArray, null);
         };
     }
 

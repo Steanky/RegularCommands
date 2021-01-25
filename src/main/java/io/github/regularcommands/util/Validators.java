@@ -16,25 +16,25 @@ import java.util.Objects;
 public final class Validators {
     public static CommandValidator PLAYER_EXECUTOR = new CommandValidator((context, arguments) -> {
         if(context.getSender() instanceof Player) {
-            return new ImmutablePair<>(true, null);
+            return ImmutablePair.of(true, null);
         }
 
-        return new ImmutablePair<>(false, "Only players can execute that command.");
+        return ImmutablePair.of(false, "Only players can execute that command.");
     });
 
     public static CommandValidator CONSOLE_EXECUTOR = new CommandValidator((context, arguments) -> {
         if(context.getSender() instanceof ConsoleCommandSender) {
-            return new ImmutablePair<>(true, null);
+            return ImmutablePair.of(true, null);
         }
 
-        return new ImmutablePair<>(false, "Only consoles can execute that command.");
+        return ImmutablePair.of(false, "Only consoles can execute that command.");
     });
 
     public static CommandValidator BLOCK_EXECUTOR = new CommandValidator((context, arguments) -> {
         if(context.getSender() instanceof BlockCommandSender) {
-            return new ImmutablePair<>(true, null);
+            return ImmutablePair.of(true, null);
         }
 
-        return new ImmutablePair<>(false, "Only command blocks can execute that command.");
+        return ImmutablePair.of(false, "Only command blocks can execute that command.");
     });
 }

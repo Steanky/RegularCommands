@@ -1,6 +1,6 @@
 package io.github.regularcommands.converter;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 
 public interface ArgumentConverter<T> {
     /**
@@ -11,5 +11,5 @@ public interface ArgumentConverter<T> {
      * parameter contains the converted object (which will be null if the conversion failed), and the third parameter
      * contains a user-friendly error message. It will be null if the conversion was a success.
      */
-    ImmutableTriple<Boolean, T, String> convert(String argument);
+    Triple<Boolean, T, String> convert(String argument);
 }

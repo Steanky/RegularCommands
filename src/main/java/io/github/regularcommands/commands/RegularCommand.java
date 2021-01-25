@@ -4,6 +4,7 @@ import io.github.regularcommands.completer.ArgumentCompleter;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.converter.Parameter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.*;
@@ -20,7 +21,7 @@ public abstract class RegularCommand {
     public RegularCommand(String name) {
         this.name = Objects.requireNonNull(name, "name cannot be null");
         this.forms = new ArrayList<>();
-        this.usageBuilder = new StringBuilder("Usages for /" + name + ": " + '\n');
+        this.usageBuilder = new StringBuilder("Usages for /" + name + ": \n");
     }
 
     /**
@@ -37,7 +38,7 @@ public abstract class RegularCommand {
         }
 
         String usage = form.getUsage();
-        if(usage != null && !usage.equals("")) {
+        if(usage != null && !usage.equals(StringUtils.EMPTY)) {
             usageBuilder.append("— ").append(usage);
         }
 
@@ -67,7 +68,8 @@ public abstract class RegularCommand {
     protected List<MatchResult> getMatches(String[] args, CommandSender sender) {
         List<MatchResult> matches = new ArrayList<>();
         for(CommandForm form : forms) {
-            if(form.getPermissions().validateFor(sender)) { //check permissions before running relatively expensive matching algorithm
+            //check permissions before running relatively expensive matching algorithm
+            if(form.getPermissions().validateFor(sender)) {
                 MatchResult matchResult = form.matches(args);
 
                 if(matchResult.matches()) {
