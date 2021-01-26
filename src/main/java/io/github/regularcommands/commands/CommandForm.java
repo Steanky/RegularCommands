@@ -229,8 +229,12 @@ public abstract class CommandForm implements Iterable<Parameter> {
             Parameter parameter = parameters[Math.min(parameters.length - 1, i)];
             String input = args[i];
 
-            if((parameter.getType() == Parameter.ParameterType.SIMPLE && parameter.getMatch().equals(input)) ||
-                    parameter.getPattern().matcher(input).matches()) {
+            if(parameter.getType() == Parameter.ParameterType.SIMPLE) { //fast match; use equality comparison
+                if(parameter.getMatch().equals(input)) {
+                    j++;
+                }
+            }
+            else if(parameter.getPattern().matcher(input).matches()) { //use slower regex as we aren't a simple param
                 j++;
             }
             else {
