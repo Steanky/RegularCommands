@@ -24,7 +24,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     private final JavaPlugin plugin;
     private final Logger logger;
     private final Map<String, RegularCommand> commands;
-    private final TextStylizer stylizer;
+    private final TextStylizer stylizer; //used to stylize text
 
     private final StringBuilder BUFFER = new StringBuilder(); //used for internal string parsing
 
