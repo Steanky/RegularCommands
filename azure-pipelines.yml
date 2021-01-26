@@ -25,3 +25,12 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'RegularCommands'
     publishLocation: 'Container'
+- task: GitHubRelease@1
+  inputs:
+    gitHubConnection: 'github.com_Steanky'
+    repositoryName: 'Steanky/RegularCommands'
+    action: 'edit'
+    target: '$(Build.SourceVersion)'
+    tag: '1.0-SNAPSHOT'
+    changeLogCompareToRelease: 'lastFullRelease'
+    changeLogType: 'commitBased'
