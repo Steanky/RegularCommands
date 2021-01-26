@@ -34,8 +34,16 @@ steps:
   inputs:
     gitHubConnection: 'github.com_Steanky'
     repositoryName: 'Steanky/RegularCommands'
+    action: 'delete'
+    tag: '1.0-SNAPSHOT'
+- task: GitHubRelease@1
+  inputs:
+    gitHubConnection: 'github.com_Steanky'
+    repositoryName: 'Steanky/RegularCommands'
     action: 'create'
     target: '$(Build.SourceVersion)'
-    tagSource: 'gitTag'
+    tagSource: 'userSpecifiedTag'
+    tag: '1.0-SNAPSHOT'
+    title: '1.0-SNAPSHOT'
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
