@@ -22,7 +22,8 @@ steps:
     goals: 'clean compile package'
 - task: CopyFiles@2
   inputs:
-    sourceFolder: '$(Agent.BuildDirectory)'
+    contents: '*.jar'
+    sourceFolder: '$(Agent.BuildDirectory)/target'
     targetFolder: '$(Build.ArtifactStagingDirectory)'    
 - task: PublishBuildArtifacts@1
   inputs:
@@ -33,8 +34,8 @@ steps:
   inputs:
     gitHubConnection: 'github.com_Steanky'
     repositoryName: 'Steanky/RegularCommands'
-    action: 'edit'
+    action: 'create'
     target: '$(Build.SourceVersion)'
-    tag: '1.0-SNAPSHOT'
+    tagSource: 'gitTag'
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
