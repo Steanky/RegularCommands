@@ -226,7 +226,11 @@ public abstract class CommandForm implements Iterable<Parameter> {
         int j = 0;
         for(int i = 0; i < args.length; i++)
         {
-            if(parameters[Math.min(parameters.length - 1, i)].getPattern().matcher(args[i]).matches()) {
+            Parameter parameter = parameters[Math.min(parameters.length - 1, i)];
+            String input = args[i];
+
+            if((parameter.getType() == Parameter.ParameterType.SIMPLE && parameter.getMatch().equals(input)) ||
+                    parameter.getPattern().matcher(input).matches()) {
                 j++;
             }
             else {
