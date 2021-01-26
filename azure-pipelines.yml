@@ -17,14 +17,15 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.11'
     jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
+    publishJUnitResults: false
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'clean compile package'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'RegularCommands'
-    publishLocation: 'Container'
+    publishLocation: 'FilePath'
+    TargetPath: '$(Build.ArtifactStagingDirectory)'
 - task: GitHubRelease@1
   inputs:
     gitHubConnection: 'github.com_Steanky'
