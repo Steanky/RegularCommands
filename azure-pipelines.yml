@@ -22,9 +22,10 @@ steps:
     goals: 'clean compile package'
 - task: CopyFiles@2
   inputs:
-    contents: '*.jar'
+    contents: '!(original-*)'
     sourceFolder: '$(Build.Repository.LocalPath)/target'
     targetFolder: '$(Build.ArtifactStagingDirectory)'    
+
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
