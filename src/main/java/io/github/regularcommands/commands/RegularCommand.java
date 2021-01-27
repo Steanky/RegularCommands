@@ -4,7 +4,7 @@ import io.github.regularcommands.completer.ArgumentCompleter;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.converter.Parameter;
 
-import org.apache.commons.lang3.StringUtils;
+import io.github.regularcommands.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.*;

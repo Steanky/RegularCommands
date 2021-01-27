@@ -1,15 +1,15 @@
 package io.github.regularcommands.commands;
 
+import io.github.regularcommands.converter.ConversionResult;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.stylize.ComponentSettings;
 import io.github.regularcommands.stylize.TextStylizer;
+import io.github.regularcommands.util.ArrayUtils;
+import io.github.regularcommands.util.StringUtils;
 import io.github.regularcommands.validator.CommandValidator;
+import io.github.regularcommands.validator.ValidationResult;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -105,20 +105,20 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             if(matches.size() > 0) {
                 for(MatchResult match : matches) { //loop all matches
                     if(match.hasPermission()) { //test permissions first
-                        Triple<Boolean, Object[], String> conversionResult = match.getConversionResult();
+                        ConversionResult<Object[]> conversionResult = match.getConversionResult();
 
-                        if(conversionResult.getLeft()) { //conversion was a success
+                        if(conversionResult.isValid()) { //conversion was a success
                             CommandForm form = match.getForm();
                             Context context = new Context(this, commandSender);
-                            CommandValidator validator = form.getValidator(context, conversionResult.getMiddle());
-                            Pair<Boolean, String> validationResult = null;
+                            CommandValidator validator = form.getValidator(context, conversionResult.getConversion());
+                            ValidationResult validationResult = null;
 
                             if(validator != null) {
-                                validationResult = validator.validate(context, conversionResult.getMiddle());
+                                validationResult = validator.validate(context, conversionResult.getConversion());
                             }
 
-                            if(validator == null || validationResult.getLeft()) {
-                                String output = form.execute(context, conversionResult.getMiddle());
+                            if(validator == null || validationResult.isValid()) {
+                                String output = form.execute(context, conversionResult.getConversion());
 
                                 if(output != null) { //we have something to display
                                     if(form.canStylize()) { //stylize if we can
@@ -131,11 +131,11 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                                 }
                             }
                             else { //validation error
-                                sendErrorMessage(commandSender, validationResult.getRight());
+                                sendErrorMessage(commandSender, validationResult.getErrorMessage());
                             }
                         }
                         else { //conversion error
-                            sendErrorMessage(commandSender, conversionResult.getRight());
+                            sendErrorMessage(commandSender, conversionResult.getErrorMessage());
                         }
                     }
                     else { //sender does not have the required permissions

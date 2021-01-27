@@ -1,8 +1,6 @@
 package io.github.regularcommands.validator;
 
 import io.github.regularcommands.commands.Context;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
 
@@ -12,17 +10,18 @@ import java.util.Objects;
  */
 public class CommandValidator {
    private final ValidationStep step;
-   private CommandValidator next;
+   private final CommandValidator depend;
 
    /**
     * Creates a new CommandValidator instance that depends on the success of another validator, which will be tested
     * first. If it fails, this CommandValidator will not execute.
     * @param step The ValidationStep used by this validator. This is the code that will perform the actual, contextual
     *             testing
-    * @param dependOn The CommandValidator whose success determines whether this instances gets tested or not
+    * @param depend The CommandValidator whose success determines whether this instances gets tested or not
     */
-   public CommandValidator(ValidationStep step, CommandValidator dependOn) {
+   public CommandValidator(ValidationStep step, CommandValidator depend) {
       this.step = Objects.requireNonNull(step, "validation step cannot be null");
+      this.depend = depend;
    }
 
    /**
@@ -38,16 +37,15 @@ public class CommandValidator {
     * earlier validators will not be executed if later validators fail.
     * @param context The validation context
     * @param arguments The command arguments
-    * @return An ImmutablePair object whose left object indicates the success of the validation and whose right object
-    * contains a user-friendly error message that should be null if the left boolean is true
+    * @return A ValidationResult object indicating the success or failure of this validator.
     */
-   public Pair<Boolean, String> validate(Context context, Object[] arguments) {
-      if(next == null) {
+   public ValidationResult validate(Context context, Object[] arguments) {
+      if(depend == null) {
          return step.validate(context, arguments);
       }
 
-      Pair<Boolean, String> result = next.validate(context, arguments);
-      if(result.getLeft()) {
+      ValidationResult result = depend.validate(context, arguments);
+      if(result.isValid()) {
          return step.validate(context, arguments);
       }
 

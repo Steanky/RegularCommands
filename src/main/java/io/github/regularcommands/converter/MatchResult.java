@@ -1,8 +1,6 @@
 package io.github.regularcommands.converter;
 
 import io.github.regularcommands.commands.CommandForm;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * Data class used internally to store the result of testing a CommandForm against a user input string.
@@ -11,7 +9,7 @@ public class MatchResult {
     private final CommandForm form;
     private final boolean hasPermission;
     private final boolean matches;
-    private final Triple<Boolean, Object[], String> conversionResult;
+    private final ConversionResult<Object[]> conversionResult;
 
     /**
      * Creates a new MatchResult object from the specified data
@@ -20,7 +18,7 @@ public class MatchResult {
      * @param matches Whether or not the form's signature matches the input
      * @param conversionResult The result of converting every input argument
      */
-    public MatchResult(CommandForm form, boolean hasPermission, boolean matches, Triple<Boolean, Object[], String> conversionResult) {
+    public MatchResult(CommandForm form, boolean hasPermission, boolean matches, ConversionResult<Object[]> conversionResult) {
         this.form = form;
         this.hasPermission = hasPermission;
         this.matches = matches;
@@ -48,7 +46,7 @@ public class MatchResult {
      * was performed as a result of the caller having insufficient permissions.
      * @return The result of converting the input arguments, or null
      */
-    public Triple<Boolean, Object[], String> getConversionResult() {
+    public ConversionResult<Object[]> getConversionResult() {
         return conversionResult;
     }
 

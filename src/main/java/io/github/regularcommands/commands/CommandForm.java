@@ -2,14 +2,13 @@ package io.github.regularcommands.commands;
 
 import io.github.regularcommands.completer.ArgumentCompleter;
 import io.github.regularcommands.converter.ArgumentConverter;
+import io.github.regularcommands.converter.ConversionResult;
 import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.converter.Parameter;
+import io.github.regularcommands.util.ArrayUtils;
 import io.github.regularcommands.util.Completers;
+import io.github.regularcommands.util.StringUtils;
 import io.github.regularcommands.validator.CommandValidator;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -42,6 +41,8 @@ public abstract class CommandForm implements Iterable<Parameter> {
 
     private final boolean vararg;
     private final boolean optional;
+
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     /**
      * Creates a CommandForm.
@@ -153,8 +154,8 @@ public abstract class CommandForm implements Iterable<Parameter> {
     public MatchResult matches(String[] args) {
         if(args.length == 0) { //optimization for zero-length parameters
             boolean matches = parameters.length == 0;
-            return new MatchResult(this, true, matches, matches ? ImmutableTriple.of(true,
-                    ArrayUtils.EMPTY_OBJECT_ARRAY, null) : null);
+            return new MatchResult(this, true, matches, matches ? ConversionResult.of(true,
+                    EMPTY_OBJECT_ARRAY, null) : null);
         }
 
         //optimization, don't bother testing if we are above or below the required length for this form
@@ -183,30 +184,30 @@ public abstract class CommandForm implements Iterable<Parameter> {
                 input = args[i]; //take user argument when possible
             }
 
-            if(!parameterMatches(input, parameter)) {
+            if(matchFails(input, parameter)) {
                 return new MatchResult(this, true, false, null);
             }
 
             ArgumentConverter<Object> converter = parameter.getConverter();
-            Triple<Boolean, Object, String> conversionResult;
+            ConversionResult<Object> conversionResult;
 
             if(converter == null) {
-                conversionResult = ImmutableTriple.of(true, input, null);
+                conversionResult = ConversionResult.of(true, input, null);
             }
             else {
                 conversionResult = parameter.getConverter().convert(input);
             }
 
-            if(conversionResult.getLeft()) { //successful conversion
-                result[i] = conversionResult.getMiddle();
+            if(conversionResult.isValid()) { //successful conversion
+                result[i] = conversionResult.getConversion();
             }
             else { //failed conversion
-                return new MatchResult(this, true, true, ImmutableTriple.of(false,
-                        null, conversionResult.getRight()));
+                return new MatchResult(this, true, true, ConversionResult.of(false,
+                        null, conversionResult.getErrorMessage()));
             }
         }
 
-        return new MatchResult(this, true,true, ImmutableTriple.of(true, result, null));
+        return new MatchResult(this, true,true, ConversionResult.of(true, result, null));
     }
 
     /**
@@ -227,7 +228,7 @@ public abstract class CommandForm implements Iterable<Parameter> {
             Parameter parameter = parameters[Math.min(i, parameters.length - 1)];
             String arg = args[i];
 
-            if(!parameterMatches(arg, parameter)) {
+            if(matchFails(arg, parameter)) {
                 if(i < args.length - 1) {
                     return -1;
                 }
@@ -240,12 +241,12 @@ public abstract class CommandForm implements Iterable<Parameter> {
         return i;
     }
 
-    private boolean parameterMatches(String argument, Parameter parameter) {
+    private boolean matchFails(String argument, Parameter parameter) {
         if(parameter.getType() == Parameter.ParameterType.SIMPLE) {
-            return parameter.getMatch().equals(argument);
+            return !parameter.getMatch().equals(argument);
         }
         else {
-            return parameter.getPattern().matcher(argument).matches();
+            return !parameter.getPattern().matcher(argument).matches();
         }
     }
 

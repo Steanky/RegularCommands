@@ -1,8 +1,5 @@
 package io.github.regularcommands.util;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.Validate;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +8,8 @@ import java.util.Objects;
  * Contains a few useful methods for processing strings.
  */
 public final class StringUtils {
+    public static final String EMPTY = "";
+
     /**
      * Splits an input string around the specified delimiter character, which can be escaped.
      * @param input The string to be split
@@ -20,7 +19,10 @@ public final class StringUtils {
      */
     public static String[] splitWithEscape(String input, char split, char escapeChar) {
         Objects.requireNonNull(input, "input cannot be null");
-        Validate.isTrue(split != escapeChar, "split and escapeChar cannot be the same character");
+
+        if(split == escapeChar) {
+            throw new IllegalArgumentException("split and escapeChar cannot be the same character");
+        }
 
         StringBuilder buffer = new StringBuilder();
         List<String> result = new ArrayList<>();
