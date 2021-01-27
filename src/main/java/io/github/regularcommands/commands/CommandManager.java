@@ -29,7 +29,6 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     private final StringBuilder BUFFER = new StringBuilder(); //used for internal string parsing
 
     private static final List<String> EMPTY_STRING_LIST = new ArrayList<>();
-    private static final TextComponent[] EMPTY_TEXT_COMPONENT_ARRAY = new TextComponent[0];
 
     /**
      * Creates a new CommandManager and associates it with the specified plugin.
@@ -114,7 +113,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                             ValidationResult validationResult = null;
 
                             if(validator != null) {
-                                validationResult = validator.validate(context, conversionResult.getConversion());
+                                validationResult = validator.validate(context, form, conversionResult.getConversion());
                             }
 
                             if(validator == null || validationResult.isValid()) {
@@ -411,7 +410,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             components.add(new TextComponent(BUFFER.toString()));
         }
 
-        return components.toArray(EMPTY_TEXT_COMPONENT_ARRAY);
+        return components.toArray(ArrayUtils.EMPTY_TEXT_COMPONENT_ARRAY);
     }
 
     private String formatStylizerError(String message, String inputString, int currentIndex) {

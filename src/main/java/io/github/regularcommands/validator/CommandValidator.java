@@ -1,5 +1,6 @@
 package io.github.regularcommands.validator;
 
+import io.github.regularcommands.commands.CommandForm;
 import io.github.regularcommands.commands.Context;
 
 import java.util.Objects;
@@ -39,14 +40,14 @@ public class CommandValidator {
     * @param arguments The command arguments
     * @return A ValidationResult object indicating the success or failure of this validator.
     */
-   public ValidationResult validate(Context context, Object[] arguments) {
+   public ValidationResult validate(Context context, CommandForm form, Object[] arguments) {
       if(depend == null) {
-         return step.validate(context, arguments);
+         return step.validate(context, form, arguments);
       }
 
-      ValidationResult result = depend.validate(context, arguments);
+      ValidationResult result = depend.validate(context, form, arguments);
       if(result.isValid()) {
-         return step.validate(context, arguments);
+         return step.validate(context, form, arguments);
       }
 
       return result;

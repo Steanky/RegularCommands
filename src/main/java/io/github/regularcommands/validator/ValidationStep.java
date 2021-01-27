@@ -1,5 +1,6 @@
 package io.github.regularcommands.validator;
 
+import io.github.regularcommands.commands.CommandForm;
 import io.github.regularcommands.commands.Context;
 
 /**
@@ -12,5 +13,5 @@ public interface ValidationStep {
      * @param arguments The command arguments
      * @return A ValidationResult object containing the result of this validation
      */
-    ValidationResult validate(Context context, Object[] arguments);
+    ValidationResult validate(Context context, CommandForm form, Object[] arguments);
 }

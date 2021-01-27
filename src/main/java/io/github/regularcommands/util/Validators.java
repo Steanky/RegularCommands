@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
  * the command (entity, player, console, or block).
  */
 public final class Validators {
-    public static CommandValidator ENTITY_EXECUTOR = new CommandValidator((context, arguments) -> {
+    public static CommandValidator ENTITY_EXECUTOR = new CommandValidator((context, form, arguments) -> {
         if(context.getSender() instanceof Entity) {
             return ValidationResult.of(true, null);
         }
@@ -20,7 +20,7 @@ public final class Validators {
         return ValidationResult.of(false, "Only entities can execute that command.");
     });
 
-    public static CommandValidator PLAYER_EXECUTOR = new CommandValidator((context, arguments) -> {
+    public static CommandValidator PLAYER_EXECUTOR = new CommandValidator((context, form, arguments) -> {
         if(context.getSender() instanceof Player) {
             return ValidationResult.of(true, null);
         }
@@ -28,7 +28,7 @@ public final class Validators {
         return ValidationResult.of(false, "Only players can execute that command.");
     });
 
-    public static CommandValidator CONSOLE_EXECUTOR = new CommandValidator((context, arguments) -> {
+    public static CommandValidator CONSOLE_EXECUTOR = new CommandValidator((context, form, arguments) -> {
         if(context.getSender() instanceof ConsoleCommandSender) {
             return ValidationResult.of(true, null);
         }
@@ -36,7 +36,7 @@ public final class Validators {
         return ValidationResult.of(false, "Only consoles can execute that command.");
     });
 
-    public static CommandValidator BLOCK_EXECUTOR = new CommandValidator((context, arguments) -> {
+    public static CommandValidator BLOCK_EXECUTOR = new CommandValidator((context, form, arguments) -> {
         if(context.getSender() instanceof BlockCommandSender) {
             return ValidationResult.of(true, null);
         }

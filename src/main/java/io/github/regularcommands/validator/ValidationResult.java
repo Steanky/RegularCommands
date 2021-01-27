@@ -1,12 +1,15 @@
 package io.github.regularcommands.validator;
 
+import java.util.Objects;
+
 public final class ValidationResult {
     private final boolean valid;
     private final String errorMessage;
 
     private ValidationResult(boolean valid, String errorMessage) {
         this.valid = valid;
-        this.errorMessage = valid ? null : errorMessage;
+        this.errorMessage = valid ? null : Objects.requireNonNull(errorMessage, "error message cannot be null" +
+                " when invalid");
     }
 
     /**

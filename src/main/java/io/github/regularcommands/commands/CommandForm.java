@@ -42,8 +42,6 @@ public abstract class CommandForm implements Iterable<Parameter> {
     private final boolean vararg;
     private final boolean optional;
 
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-
     /**
      * Creates a CommandForm.
      *
@@ -102,12 +100,6 @@ public abstract class CommandForm implements Iterable<Parameter> {
     }
 
     /**
-     * Gets the length of the internal parameter array.
-     * @return The length of the internal parameter array
-     */
-    public int length() { return parameters.length; }
-
-    /**
      * Returns a copy of the parameters array.
      * @return A copy of the parameters array
      */
@@ -155,7 +147,7 @@ public abstract class CommandForm implements Iterable<Parameter> {
         if(args.length == 0) { //optimization for zero-length parameters
             boolean matches = parameters.length == 0;
             return new MatchResult(this, true, matches, matches ? ConversionResult.of(true,
-                    EMPTY_OBJECT_ARRAY, null) : null);
+                    ArrayUtils.EMPTY_OBJECT_ARRAY, null) : null);
         }
 
         //optimization, don't bother testing if we are above or below the required length for this form

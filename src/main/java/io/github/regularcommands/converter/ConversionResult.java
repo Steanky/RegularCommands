@@ -1,5 +1,11 @@
 package io.github.regularcommands.converter;
 
+import java.util.Objects;
+
+/**
+ * Encapsulates the result of trying to convert an argument.
+ * @param <T> The type of object we converted to
+ */
 public class ConversionResult<T> {
     private final boolean valid;
     private final T conversion;
@@ -7,8 +13,9 @@ public class ConversionResult<T> {
 
     private ConversionResult(boolean valid, T conversion, String errorMessage) {
         this.valid = valid;
-        this.conversion = valid ? conversion : null;
-        this.errorMessage = valid ? null : errorMessage;
+        this.conversion = valid ? Objects.requireNonNull(conversion, "conversion cannot be null when valid") : null;
+        this.errorMessage = valid ? null : Objects.requireNonNull(errorMessage, "error message cannot be null " +
+                "when invalid");
     }
 
     /**

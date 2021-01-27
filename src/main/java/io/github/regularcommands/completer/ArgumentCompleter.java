@@ -5,6 +5,9 @@ import io.github.regularcommands.commands.Context;
 
 import java.util.List;
 
+/**
+ * This object completes arguments
+ */
 public class ArgumentCompleter {
     private final CompletionStep step;
     private final ArgumentCompleter depend;
