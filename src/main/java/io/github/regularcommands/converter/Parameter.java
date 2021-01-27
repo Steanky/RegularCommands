@@ -298,7 +298,7 @@ public class Parameter {
      * @return The built-in tab completion options that should be shown for this parameter
      */
     public List<String> getStaticCompletionOptions() {
-        return new ArrayList<>(staticCompletionOptions);
+        return staticCompletionOptions == null ? new ArrayList<>() : new ArrayList<>(staticCompletionOptions);
     }
 
     /**
