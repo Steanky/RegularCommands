@@ -65,7 +65,7 @@ public abstract class RegularCommand {
      * @param sender The CommandSender that is attempting to run this command
      * @return All matching command forms, or an empty list if none exist
      */
-    protected List<MatchResult> getMatches(String[] args, CommandSender sender) {
+    public List<MatchResult> getMatches(String[] args, CommandSender sender) {
         List<MatchResult> matches = new ArrayList<>();
         for(CommandForm form : forms) {
             //check permissions before running relatively expensive matching algorithm
@@ -93,11 +93,11 @@ public abstract class RegularCommand {
      *             empty array
      * @return A list containing tab completions, or an empty list if none exist
      */
-    protected List<String> getCompletions(CommandManager manager, CommandSender sender, String[] args) {
+    public List<String> getCompletions(CommandManager manager, CommandSender sender, String[] args) {
         List<String> possibleCompletions = new ArrayList<>();
 
         for(CommandForm form : forms) {
-            if(form.fuzzyMatch(args) > 0) {
+            if(form.matchScore(args) >= 0) {
                 ArgumentCompleter completer = form.getCompleter();
 
                 if(completer != null) {

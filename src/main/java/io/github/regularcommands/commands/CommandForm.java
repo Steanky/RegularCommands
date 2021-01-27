@@ -213,36 +213,43 @@ public abstract class CommandForm implements Iterable<Parameter> {
     }
 
     /**
-     * Returns how many sequential arguments the provided argument array matches. This is used to implement relatively
-     * intelligent tab completion.
-     * @param args The (potentially incomplete) argument array to match
-     * @return The number of matching, sequential arguments
+     * Calculates a match score, which describes how close a given set of arguments is to matching this form. It will
+     * return -1 if there is no chance that the provided arguments can be made to perfectly match this form by
+     * <i>adding</i> additional characters. The last argument is treated specially; if it does not match, it does not
+     * cause the argument to return -1
+     * @param args The arguments, which may be incomplete.
+     * @return The match score for the provided arguments
      */
-    public int fuzzyMatch(String[] args) {
-        if(parameters.length == 0 || args.length > requiredLength && !vararg) {
-            return 0;
+    public int matchScore(String[] args) {
+        if(parameters.length == 0 || !vararg && args.length > requiredLength) {
+            return -1;
         }
 
-        int j = 0;
-        for(int i = 0; i < args.length; i++)
-        {
-            Parameter parameter = parameters[Math.min(parameters.length - 1, i)];
-            String input = args[i];
+        int i;
+        for(i = 0; i < args.length; i++) {
+            Parameter parameter = parameters[Math.min(i, parameters.length - 1)];
+            String arg = args[i];
 
-            if(parameter.getType() == Parameter.ParameterType.SIMPLE) { //fast match; use equality comparison
-                if(parameter.getMatch().equals(input)) {
-                    j++;
+            if(!parameterMatches(arg, parameter)) {
+                if(i < args.length - 1) {
+                    return -1;
+                }
+                else {
+                    return i;
                 }
             }
-            else if(parameter.getPattern().matcher(input).matches()) { //use slower regex as we aren't a simple param
-                j++;
-            }
-            else {
-                break;
-            }
         }
 
-        return j;
+        return i;
+    }
+
+    private boolean parameterMatches(String argument, Parameter parameter) {
+        if(parameter.getType() == Parameter.ParameterType.SIMPLE) {
+            return parameter.getMatch().equals(argument);
+        }
+        else {
+            return parameter.getPattern().matcher(argument).matches();
+        }
     }
 
     /**

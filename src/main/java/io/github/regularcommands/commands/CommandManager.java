@@ -161,7 +161,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
-        if(args.length > 0) {
+        if(args.length > 0) { //possibly redundant, needs testing
             RegularCommand regularCommand = commands.get(command.getName());
 
             if(regularCommand != null) {
