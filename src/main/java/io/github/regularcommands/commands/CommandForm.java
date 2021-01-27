@@ -183,10 +183,7 @@ public abstract class CommandForm implements Iterable<Parameter> {
                 input = args[i]; //take user argument when possible
             }
 
-            //optimization: .equals() comparison for simple parameters
-            if((parameterType == Parameter.ParameterType.SIMPLE && !parameter.getMatch().equals(input)) ||
-                    !parameter.getPattern().matcher(input).matches()) {
-                //equality or regex match failed
+            if(!parameterMatches(input, parameter)) {
                 return new MatchResult(this, true, false, null);
             }
 
