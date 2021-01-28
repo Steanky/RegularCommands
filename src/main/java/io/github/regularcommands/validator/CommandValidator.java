@@ -2,6 +2,7 @@ package io.github.regularcommands.validator;
 
 import io.github.regularcommands.commands.CommandForm;
 import io.github.regularcommands.commands.Context;
+import io.github.regularcommands.util.Validators;
 
 import java.util.Objects;
 
@@ -51,5 +52,14 @@ public class CommandValidator {
       }
 
       return result;
+   }
+
+   /**
+    * Gets the ValidationStep for this instance. Can be used to create a composite CommandValidator in certain
+    * circumstances.
+    * @return The ValidationStep for this instance
+    */
+   public ValidationStep getStep() {
+      return step;
    }
 }
