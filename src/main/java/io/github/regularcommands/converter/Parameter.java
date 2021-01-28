@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -33,42 +34,41 @@ public class Parameter {
     private final ParameterType type;
     private final String defaultValue;
 
+    @SuppressWarnings("unchecked")
     private Parameter(String definition, String usage, String defaultValue, ArgumentConverter<?> converter,
                       List<String> staticCompletionOptions, ParameterType type) {
         switch (type) {
             case SIMPLE:
-                if(definition == null) {
-                    throw new IllegalArgumentException("definition cannot be null for ParameterType.SIMPLE");
-                }
-
                 this.pattern = null;
-                this.match = definition;
+                this.match = Objects.requireNonNull(definition, "definition cannot be null for ParameterType.SIMPLE");
                 this.usage = usage == null ? '[' + definition + ']' : usage;
                 this.staticCompletionOptions = Lists.newArrayList(definition);
+                this.defaultValue = null;
                 break;
             case OPTIONAL:
-                if(defaultValue == null) {
-                    throw new IllegalArgumentException("defaultValue cannot be null for ParameterType.OPTIONAL");
-                }
+                this.pattern = Pattern.compile(definition);
+                this.match = null;
+                this.usage = Objects.requireNonNull(usage, "usage cannot be null for ParameterType.OPTIONAL");
+                this.staticCompletionOptions = new ArrayList<>();
+                this.defaultValue = Objects.requireNonNull(defaultValue, "defaultValue cannot be null for ParameterType.OPTIONAL");
+                break;
             case STANDARD:
             case VARARG:
             default:
-                if(usage == null) {
-                    throw new IllegalArgumentException("usage cannot be null except for ParameterType.SIMPLE");
-                }
-
                 this.pattern = Pattern.compile(definition);
                 this.match = null;
-
-                this.usage = usage;
-                this.staticCompletionOptions = staticCompletionOptions;
+                this.usage = Objects.requireNonNull(usage, "usage cannot be null except for ParameterType.SIMPLE");
+                this.staticCompletionOptions = new ArrayList<>();
+                this.defaultValue = null;
                 break;
         }
 
-        //noinspection unchecked
-        this.converter = converter == null ? null : (ArgumentConverter<Object>) converter;
+        this.converter = (ArgumentConverter<Object>) converter;
         this.type = type;
-        this.defaultValue = defaultValue;
+
+        if(staticCompletionOptions != null) {
+            this.staticCompletionOptions.addAll(staticCompletionOptions);
+        }
     }
 
     /**
