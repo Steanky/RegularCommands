@@ -10,15 +10,17 @@ import java.util.Objects;
 public class Context {
     private final CommandManager manager;
     private final CommandSender sender;
+    private final CommandForm<?> form;
 
     /**
      * Creates a new Context object, which contains a CommandManager and a CommandSender.
      * @param manager The CommandManager
      * @param sender The CommandSender
      */
-    public Context(CommandManager manager, CommandSender sender) {
+    public Context(CommandManager manager, CommandSender sender, CommandForm<?> form) {
         this.manager = Objects.requireNonNull(manager, "manager cannot be null");
         this.sender = Objects.requireNonNull(sender, "sender cannot be null");
+        this.form = Objects.requireNonNull(form, "form cannot be null");
     }
 
     /**
@@ -33,5 +35,9 @@ public class Context {
      */
     public CommandSender getSender() {
         return sender;
+    }
+
+    public CommandForm<?> getForm() {
+        return form;
     }
 }

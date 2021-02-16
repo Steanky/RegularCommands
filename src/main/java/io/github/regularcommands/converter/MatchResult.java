@@ -6,7 +6,7 @@ import io.github.regularcommands.commands.CommandForm;
  * Data class used internally to store the result of testing a CommandForm against a user input string.
  */
 public class MatchResult {
-    private final CommandForm form;
+    private final CommandForm<?> form;
     private final boolean hasPermission;
     private final boolean matches;
     private final ConversionResult<Object[]> conversionResult;
@@ -18,7 +18,7 @@ public class MatchResult {
      * @param matches Whether or not the form's signature matches the input
      * @param conversionResult The result of converting every input argument
      */
-    public MatchResult(CommandForm form, boolean hasPermission, boolean matches, ConversionResult<Object[]> conversionResult) {
+    public MatchResult(CommandForm<?> form, boolean hasPermission, boolean matches, ConversionResult<Object[]> conversionResult) {
         this.form = form;
         this.hasPermission = hasPermission;
         this.matches = matches;
@@ -29,7 +29,7 @@ public class MatchResult {
      * Gets the form associated with this MatchResult.
      * @return The associated form
      */
-    public CommandForm getForm() {
+    public CommandForm<?> getForm() {
         return form;
     }
 

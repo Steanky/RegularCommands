@@ -34,17 +34,16 @@ public class ArgumentCompleter {
     /**
      * Produces a list of completion strings given the context, CommandForm, and a possibly incomplete set of arguments.
      * @param context The command context
-     * @param form A partially matching command form
      * @param args A potentially incomplete list of arguments
      * @return A list of strings corresponding to potential completions, or null if there are none
      */
-    public List<String> complete(Context context, CommandForm form, String[] args) {
+    public List<String> complete(Context context, String[] args) {
         if(depend == null) {
-            return step.complete(context, form, args);
+            return step.complete(context, args);
         }
 
-        List<String> nextResult = depend.complete(context, form, args);
-        List<String> result = step.complete(context, form, args);
+        List<String> nextResult = depend.complete(context, args);
+        List<String> result = step.complete(context, args);
 
         if(result != null) {
             if(nextResult != null) {

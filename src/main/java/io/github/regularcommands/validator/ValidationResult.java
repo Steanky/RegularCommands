@@ -2,14 +2,25 @@ package io.github.regularcommands.validator;
 
 import java.util.Objects;
 
-public final class ValidationResult {
+/**
+ * Encapsulates the result of validating an object.
+ * @param <T> The type of metadata held by this ValidationResult, which may contain the result of a cast or some other
+ *           operation.
+ */
+public final class ValidationResult<T> {
     private final boolean valid;
     private final String errorMessage;
+    private final T data;
 
-    private ValidationResult(boolean valid, String errorMessage) {
+    private ValidationResult(boolean valid, String errorMessage, T data) {
+        if(!valid && data != null) {
+            throw new IllegalArgumentException("data cannot be non-null if the ValidationResult is invalid");
+        }
+
         this.valid = valid;
         this.errorMessage = valid ? null : Objects.requireNonNull(errorMessage, "error message cannot be null" +
                 " when invalid");
+        this.data = data;
     }
 
     /**
@@ -18,8 +29,8 @@ public final class ValidationResult {
      * @param errorMessage The error message, which will only be used if !valid
      * @return The new ValidationResult object
      */
-    public static ValidationResult of(boolean valid, String errorMessage) {
-        return new ValidationResult(valid, errorMessage);
+    public static <T> ValidationResult<T> of(boolean valid, String errorMessage, T data) {
+        return new ValidationResult<>(valid, errorMessage, data);
     }
 
     /**
@@ -36,5 +47,14 @@ public final class ValidationResult {
      */
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    /**
+     * Gets the data object that may have been created as a result of validation. This is guaranteed to be null if
+     * isValid() returns false, and may or may not be null if it returns true.
+     * @return The data, or null if !valid (or the validator did not assign a value)
+     */
+    public T getData() {
+        return data;
     }
 }

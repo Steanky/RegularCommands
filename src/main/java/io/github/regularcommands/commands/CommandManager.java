@@ -107,30 +107,17 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         ConversionResult<Object[]> conversionResult = match.getConversionResult();
 
                         if(conversionResult.isValid()) { //conversion was a success
-                            CommandForm form = match.getForm();
-                            Context context = new Context(this, commandSender);
-                            CommandValidator validator = form.getValidator(context, conversionResult.getConversion());
-                            ValidationResult validationResult = null;
+                            CommandForm<?> form = match.getForm();
+                            String output = validateAndExecute(form, commandSender, conversionResult.getConversion());
 
-                            if(validator != null) {
-                                validationResult = validator.validate(context, form, conversionResult.getConversion());
-                            }
-
-                            if(validator == null || validationResult.isValid()) {
-                                String output = form.execute(context, conversionResult.getConversion());
-
-                                if(output != null) { //we have something to display
-                                    if(form.canStylize()) { //stylize if we can
-                                        //let BadFormatExceptions propagate! they are the fault of the library user
-                                        commandSender.spigot().sendMessage(parseStylizedMessage(output));
-                                    }
-                                    else { //send raw output because this command doesn't support stylization
-                                        commandSender.sendMessage(output);
-                                    }
+                            if(output != null) { //we have something to display
+                                if(form.canStylize()) { //stylize if we can
+                                    //let BadFormatExceptions propagate! they are the fault of the library user
+                                    commandSender.spigot().sendMessage(parseStylizedMessage(output));
                                 }
-                            }
-                            else { //validation error
-                                sendErrorMessage(commandSender, validationResult.getErrorMessage());
+                                else { //send raw output because this command doesn't support stylization
+                                    commandSender.sendMessage(output);
+                                }
                             }
                         }
                         else { //conversion error
@@ -142,7 +129,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                     }
                 }
             }
-            else { //no matching commandforms
+            else { //no matching forms
                 commandSender.sendMessage(regularCommand.getUsage());
             }
         }
@@ -156,6 +143,24 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         }
 
         return true;
+    }
+
+    private <T> String validateAndExecute(CommandForm<T> form, CommandSender sender, Object[] args) {
+        Context context = new Context(this, sender, form);
+        CommandValidator<T, ?> validator = form.getValidator(context, args);
+
+        if(validator != null) {
+            ValidationResult<T> result = validator.validate(context, args);
+
+            if(result.isValid()) {
+                return form.execute(context, args, result.getData());
+            }
+            else {
+                sendErrorMessage(context.getSender(), result.getErrorMessage());
+            }
+        }
+
+        return form.execute(context, args, null);
     }
 
     @Override

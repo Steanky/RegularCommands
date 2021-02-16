@@ -11,7 +11,7 @@ import java.util.*;
 
 public abstract class RegularCommand {
     private final String name;
-    private final List<CommandForm> forms;
+    private final List<CommandForm<?>> forms;
     private final StringBuilder usageBuilder;
 
     /**
@@ -28,7 +28,7 @@ public abstract class RegularCommand {
      * Adds a form to this RegularCommand.
      * @param form The form to add
      */
-    public void addForm(CommandForm form) {
+    public void addForm(CommandForm<?> form) {
         forms.add(Objects.requireNonNull(form, "form cannot be null"));
 
         usageBuilder.append('/').append(getName()).append(' ');
@@ -67,7 +67,7 @@ public abstract class RegularCommand {
      */
     public List<MatchResult> getMatches(String[] args, CommandSender sender) {
         List<MatchResult> matches = new ArrayList<>();
-        for(CommandForm form : forms) {
+        for(CommandForm<?> form : forms) {
             //check permissions before running relatively expensive matching algorithm
             if(form.getPermissions().validateFor(sender)) {
                 MatchResult matchResult = form.matches(args);
@@ -96,12 +96,12 @@ public abstract class RegularCommand {
     public List<String> getCompletions(CommandManager manager, CommandSender sender, String[] args) {
         List<String> possibleCompletions = new ArrayList<>();
 
-        for(CommandForm form : forms) {
+        for(CommandForm<?> form : forms) {
             if(form.matchScore(args) >= 0) {
                 ArgumentCompleter completer = form.getCompleter();
 
                 if(completer != null) {
-                    List<String> formCompletions = completer.complete(new Context(manager, sender), form, args);
+                    List<String> formCompletions = completer.complete(new Context(manager, sender, form), args);
 
                     if(formCompletions != null) {
                         possibleCompletions.addAll(formCompletions);

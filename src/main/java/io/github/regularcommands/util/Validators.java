@@ -3,6 +3,7 @@ package io.github.regularcommands.util;
 import io.github.regularcommands.validator.CommandValidator;
 import io.github.regularcommands.validator.ValidationResult;
 import org.bukkit.command.BlockCommandSender;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -12,35 +13,39 @@ import org.bukkit.entity.Player;
  * the command (entity, player, console, or block).
  */
 public final class Validators {
-    public static CommandValidator ENTITY_EXECUTOR = new CommandValidator((context, form, arguments) -> {
-        if(context.getSender() instanceof Entity) {
-            return ValidationResult.of(true, null);
+    public static CommandValidator<Entity, ?> ENTITY_EXECUTOR = new CommandValidator<>((context, form, arguments) -> {
+        CommandSender sender = context.getSender();
+        if(sender instanceof Entity) {
+            return ValidationResult.of(true, null, (Entity)sender);
         }
 
-        return ValidationResult.of(false, "Only entities can execute that command.");
+        return ValidationResult.of(false, "Only entities can execute that command.", null);
     });
 
-    public static CommandValidator PLAYER_EXECUTOR = new CommandValidator((context, form, arguments) -> {
+    public static CommandValidator<Player, ?> PLAYER_EXECUTOR = new CommandValidator<>((context, form, arguments) -> {
+        CommandSender sender = context.getSender();
         if(context.getSender() instanceof Player) {
-            return ValidationResult.of(true, null);
+            return ValidationResult.of(true, null, (Player)sender);
         }
 
-        return ValidationResult.of(false, "Only players can execute that command.");
+        return ValidationResult.of(false, "Only players can execute that command.", null);
     });
 
-    public static CommandValidator CONSOLE_EXECUTOR = new CommandValidator((context, form, arguments) -> {
-        if(context.getSender() instanceof ConsoleCommandSender) {
-            return ValidationResult.of(true, null);
+    public static CommandValidator<ConsoleCommandSender, ?> CONSOLE_EXECUTOR = new CommandValidator<>((context, form, arguments) -> {
+        CommandSender sender = context.getSender();
+        if(sender instanceof ConsoleCommandSender) {
+            return ValidationResult.of(true, null, (ConsoleCommandSender)sender);
         }
 
-        return ValidationResult.of(false, "Only consoles can execute that command.");
+        return ValidationResult.of(false, "Only consoles can execute that command.", null);
     });
 
-    public static CommandValidator BLOCK_EXECUTOR = new CommandValidator((context, form, arguments) -> {
-        if(context.getSender() instanceof BlockCommandSender) {
-            return ValidationResult.of(true, null);
+    public static CommandValidator<BlockCommandSender, ?> BLOCK_EXECUTOR = new CommandValidator<>((context, form, arguments) -> {
+        CommandSender sender = context.getSender();
+        if(sender instanceof BlockCommandSender) {
+            return ValidationResult.of(true, null, (BlockCommandSender)sender);
         }
 
-        return ValidationResult.of(false, "Only command blocks can execute that command.");
+        return ValidationResult.of(false, "Only command blocks can execute that command.", null);
     });
 }

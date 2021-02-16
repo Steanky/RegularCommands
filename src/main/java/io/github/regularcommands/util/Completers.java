@@ -1,5 +1,6 @@
 package io.github.regularcommands.util;
 
+import io.github.regularcommands.commands.CommandForm;
 import io.github.regularcommands.completer.ArgumentCompleter;
 
 import java.util.ArrayList;
@@ -10,7 +11,8 @@ import java.util.List;
  * static completion options and narrows them down based on what the user is typing (last argument).
  */
 public final class Completers {
-    public static final ArgumentCompleter PARAMETER_COMPLETER = new ArgumentCompleter((context, form, args) -> {
+    public static final ArgumentCompleter PARAMETER_COMPLETER = new ArgumentCompleter((context, args) -> {
+        CommandForm<?> form = context.getForm();
         int length = form.size();
 
         if(length > 0) {
