@@ -17,7 +17,7 @@ public class Context {
      * @param manager The CommandManager
      * @param sender The CommandSender
      */
-    public Context(CommandManager manager, CommandSender sender, CommandForm<?> form) {
+    public Context(CommandManager manager, CommandForm<?> form, CommandSender sender) {
         this.manager = Objects.requireNonNull(manager, "manager cannot be null");
         this.sender = Objects.requireNonNull(sender, "sender cannot be null");
         this.form = Objects.requireNonNull(form, "form cannot be null");

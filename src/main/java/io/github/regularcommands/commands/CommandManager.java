@@ -12,7 +12,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * This class keeps track of all registered commands and includes some utility functions.
  */
 public class CommandManager implements CommandExecutor, TabCompleter {
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     private final Logger logger;
     private final Map<String, RegularCommand> commands;
     private final TextStylizer stylizer; //used to stylize text
@@ -34,7 +34,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * Creates a new CommandManager and associates it with the specified plugin.
      * @param plugin The associated plugin
      */
-    public CommandManager(JavaPlugin plugin) {
+    public CommandManager(Plugin plugin) {
         this.plugin = Objects.requireNonNull(plugin, "plugin cannot be null");
         logger = plugin.getLogger();
         commands = new HashMap<>();
@@ -46,18 +46,43 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * @param command The RegularCommand to register
      */
     public void registerCommand(RegularCommand command) {
-        commands.put(Objects.requireNonNull(command, "command cannot be null").getName(), command);
-        PluginCommand pluginCommand = Objects.requireNonNull(plugin.getServer().getPluginCommand(command.getName()),
-                "command must also be defined in plugin.yml");
-        pluginCommand.setExecutor(this);
-        pluginCommand.setTabCompleter(this);
+        String name = Objects.requireNonNull(command, "command cannot be null").getName();
+
+        if(!commands.containsKey(name)) {
+            commands.put(name, command);
+            PluginCommand pluginCommand = Objects.requireNonNull(plugin.getServer().getPluginCommand(command.getName()),
+                    "command must also be defined in plugin.yml");
+            pluginCommand.setExecutor(this);
+            pluginCommand.setTabCompleter(this);
+        }
+        else {
+            throw new IllegalArgumentException("a command with that name has already been registered");
+        }
+    }
+
+    /**
+     * Returns the RegularCommand with the specified name.
+     * @param name The name of the command
+     * @return The RegularCommand with the given unique name, or null if it doesn't exist
+     */
+    public RegularCommand getCommand(String name) {
+        return commands.get(name);
+    }
+
+    /**
+     * Returns whether or not a RegularCommand with the given name has been registered.
+     * @param name The name of the command
+     * @return Whether or not it has been registered
+     */
+    public boolean hasCommand(String name) {
+        return commands.containsKey(name);
     }
 
     /**
      * Returns the JavaPlugin this CommandManager instance is attached to.
      * @return The associated JavaPlugin
      */
-    public JavaPlugin getPlugin() {
+    public Plugin getPlugin() {
         return plugin;
     }
 
@@ -146,7 +171,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     private <T> String validateAndExecute(CommandForm<T> form, CommandSender sender, Object[] args) {
-        Context context = new Context(this, sender, form);
+        Context context = new Context(this, form, sender);
         CommandValidator<T, ?> validator = form.getValidator(context, args);
 
         if(validator != null) {

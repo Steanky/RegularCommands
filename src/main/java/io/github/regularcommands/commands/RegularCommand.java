@@ -7,8 +7,14 @@ import io.github.regularcommands.converter.Parameter;
 import io.github.regularcommands.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
+/**
+ * Represents a command, which should conceptually organize a number of related CommandForms. Strictly, RegularCommands
+ * have a unique name (which is used to identify it) and a user-friendly usage string.
+ */
 public abstract class RegularCommand {
     private final String name;
     private final List<CommandForm<?>> forms;
@@ -101,7 +107,7 @@ public abstract class RegularCommand {
                 ArgumentCompleter completer = form.getCompleter();
 
                 if(completer != null) {
-                    List<String> formCompletions = completer.complete(new Context(manager, sender, form), args);
+                    List<String> formCompletions = completer.complete(new Context(manager, form, sender), args);
 
                     if(formCompletions != null) {
                         possibleCompletions.addAll(formCompletions);
