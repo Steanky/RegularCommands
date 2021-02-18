@@ -7,7 +7,6 @@ import io.github.regularcommands.converter.Parameter;
 import io.github.regularcommands.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 

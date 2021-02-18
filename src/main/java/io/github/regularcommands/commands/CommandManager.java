@@ -184,8 +184,11 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 sendErrorMessage(context.getSender(), result.getErrorMessage());
             }
         }
+        else {
+            return form.execute(context, args, null);
+        }
 
-        return form.execute(context, args, null);
+        return null;
     }
 
     @Override
