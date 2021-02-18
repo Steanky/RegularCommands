@@ -2,8 +2,6 @@ package io.github.regularcommands.validator;
 
 import io.github.regularcommands.commands.Context;
 
-import java.util.Objects;
-
 /**
  * Used to validate against the command context. Validators can 'depend' on the success of a single other validator,
  * which will be executed first.
@@ -14,35 +12,8 @@ import java.util.Objects;
  * @param <V> The type of data object this CommandValidator receives
  */
 public class CommandValidator<T, V> {
-   /**
-    * Enables covariant validators.
-    * @param <U> The subclass of V (or V itself)
-    */
-   private class Holder<U extends V> {
-      private final ValidationStep<T, U> step;
-      private final CommandValidator<U, ?> depend;
-
-      private Holder(ValidationStep<T, U> step, CommandValidator<U, ?> depend) {
-         this.step = step;
-         this.depend = depend;
-      }
-
-      private ValidationResult<T> validate(Context context, Object[] arguments) {
-         if(depend == null) {
-            return step.validate(context, arguments, null);
-         }
-
-         ValidationResult<U> result = depend.validate(context, arguments);
-
-         if(result.isValid()) {
-            return step.validate(context, arguments, result.getData());
-         }
-
-         return ValidationResult.of(false, result.getErrorMessage(), null);
-      }
-   }
-
-   private final Holder<? extends V> holder;
+   private final ValidationStep<T, V> step;
+   private final CommandValidator<? extends V, ?> depend;
 
    /**
     * Creates a new CommandValidator instance that depends on the success of another validator, which will be tested
@@ -51,15 +22,25 @@ public class CommandValidator<T, V> {
     *             testing
     * @param depend The CommandValidator whose success determines whether this instances gets tested or not
     */
-   public <U extends V> CommandValidator(ValidationStep<T, U> step, CommandValidator<U, ?> depend) {
-      holder = new Holder<>(Objects.requireNonNull(step, "validation step cannot be null"), depend);
+   public CommandValidator(ValidationStep<T, V> step, CommandValidator<? extends V, ?> depend) {
+      this.step = step;
+      this.depend = depend;
+   }
+
+   /**
+    * Creates a new CommandValidator from this CommandValidator that depends on the given CommandValidator.
+    * @param depend The CommandValidator the new validator will depend on
+    * @return The new validator
+    */
+   public CommandValidator<T, V> from(CommandValidator<? extends V, ?> depend) {
+      return new CommandValidator<>(step, depend);
    }
 
    /**
     * Creates a new CommandValidator instance, which does not depend on any other validators.
     * @param step The ValidationStep used by this validator
     */
-   public CommandValidator(ValidationStep<T, ? extends V> step) {
+   public CommandValidator(ValidationStep<T, V> step) {
       this(step, null);
    }
 
@@ -71,15 +52,16 @@ public class CommandValidator<T, V> {
     * @return A ValidationResult object indicating the success or failure of this validator.
     */
    public ValidationResult<T> validate(Context context, Object[] arguments) {
-      return holder.validate(context, arguments);
-   }
+      if(depend == null) {
+         return step.validate(context, arguments, null);
+      }
 
-   /**
-    * Gets the ValidationStep for this instance. Can be used to create a composite CommandValidator in certain
-    * circumstances.
-    * @return The ValidationStep for this instance
-    */
-   public ValidationStep<T, ? extends V> getStep() {
-      return holder.step;
+      ValidationResult<? extends V> result = depend.validate(context, arguments);
+
+      if(result.isValid()) {
+         return step.validate(context, arguments, result.getData());
+      }
+
+      return ValidationResult.of(false, result.getErrorMessage(), null);
    }
 }

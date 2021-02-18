@@ -25,7 +25,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
 
         @Override
         public boolean hasNext() {
-            return ArrayUtils.isArrayIndexValid(parameters, ++index);
+            return ++index < parameters.length;
         }
 
         @Override
