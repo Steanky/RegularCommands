@@ -49,7 +49,7 @@ public class Parameter {
                 this.pattern = Pattern.compile(definition);
                 this.match = null;
                 this.usage = Objects.requireNonNull(usage, "usage cannot be null for ParameterType.OPTIONAL");
-                this.staticCompletionOptions = new ArrayList<>();
+                this.staticCompletionOptions = staticCompletionOptions;
                 this.defaultValue = Objects.requireNonNull(defaultValue, "defaultValue cannot be null for ParameterType.OPTIONAL");
                 break;
             case STANDARD:
@@ -58,17 +58,13 @@ public class Parameter {
                 this.pattern = Pattern.compile(definition);
                 this.match = null;
                 this.usage = Objects.requireNonNull(usage, "usage cannot be null except for ParameterType.SIMPLE");
-                this.staticCompletionOptions = new ArrayList<>();
+                this.staticCompletionOptions = staticCompletionOptions;
                 this.defaultValue = null;
                 break;
         }
 
         this.converter = (ArgumentConverter<Object>) converter;
         this.type = type;
-
-        if(staticCompletionOptions != null) {
-            this.staticCompletionOptions.addAll(staticCompletionOptions);
-        }
     }
 
     /**

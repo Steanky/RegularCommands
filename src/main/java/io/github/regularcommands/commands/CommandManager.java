@@ -21,6 +21,12 @@ import java.util.logging.Logger;
  * This class keeps track of all registered commands and includes some utility functions.
  */
 public class CommandManager implements CommandExecutor, TabCompleter {
+    private static class SimpleCommand extends RegularCommand {
+        public SimpleCommand(String name) {
+            super(name);
+        }
+    }
+
     private final Plugin plugin;
     private final Logger logger;
     private final Map<String, RegularCommand> commands;
@@ -119,6 +125,17 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         plugin.getServer().spigot().broadcast(parseStylizedMessage(message));
     }
 
+    /**
+     * Registers a CommandForm with this CommandManager. A default implementation of RegularCommand will be created if
+     * one with the given name is absent; if the name exists, the form will be added to the already-present command.
+     * Note that it is still necessary to have a command matching the given name defined in plugin.yml.
+     * @param name The name of the command to register the form under
+     * @param form The CommandForm instance to register
+     */
+    public void registerForm(String name, CommandForm<?> form) {
+        commands.computeIfAbsent(name, SimpleCommand::new).addForm(form);
+    }
+
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
         RegularCommand regularCommand = commands.get(command.getName());
@@ -128,7 +145,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
             if(matches.size() > 0) {
                 for(MatchResult match : matches) { //loop all matches
-                    if(match.hasPermission()) { //test permissions first
+                    if(match.hasPermission()) { //check permissions match first
                         ConversionResult<Object[]> conversionResult = match.getConversionResult();
 
                         if(conversionResult.isValid()) { //conversion was a success
