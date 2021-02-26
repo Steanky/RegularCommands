@@ -445,7 +445,6 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                     escape = false;
                     break;
             }
-            i++;
         }
 
         if(name) {
