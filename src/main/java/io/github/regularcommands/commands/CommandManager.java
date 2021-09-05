@@ -8,6 +8,7 @@ import io.github.regularcommands.util.ArrayUtils;
 import io.github.regularcommands.util.StringUtils;
 import io.github.regularcommands.validator.CommandValidator;
 import io.github.regularcommands.validator.ValidationResult;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.*;
@@ -150,16 +151,18 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
                         if(conversionResult.isValid()) { //conversion was a success
                             CommandForm<?> form = match.getForm();
-                            String output = validateAndExecute(form, commandSender, conversionResult.getConversion());
+                            Component output = validateAndExecute(form, commandSender, conversionResult.getConversion());
 
                             if(output != null) { //we have something to display
+                                /*
                                 if(form.canStylize()) { //stylize if we can
                                     //let BadFormatExceptions propagate! they are the fault of the library user
                                     commandSender.spigot().sendMessage(parseStylizedMessage(output));
                                 }
                                 else { //send raw output because this command doesn't support stylization
+                                 */
                                     commandSender.sendMessage(output);
-                                }
+                                //}
                             }
                         }
                         else { //conversion error
@@ -167,7 +170,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         }
                     }
                     else { //sender does not have the required permissions
-                        sendErrorMessage(commandSender, "You do not have permission to execute this command.");
+                        sendErrorMessage(commandSender,
+                                Component.text("You do not have permission to execute this command."));
                     }
                 }
             }
@@ -180,14 +184,15 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                     "possible due to it not being present in the command map.", commandSender.getName(),
                     command.getName()));
 
-            sendErrorMessage(commandSender, "That command has been registered with this manager, but was unable " +
-                    "to be found in the internal mappings. Report this error to your server admins.");
+            sendErrorMessage(commandSender, Component.text("That command has been registered with " +
+                    "this manager, but was unable to be found in the internal mappings. " +
+                    "Report this error to your server admins."));
         }
 
         return true;
     }
 
-    private <T> String validateAndExecute(CommandForm<T> form, CommandSender sender, Object[] args) {
+    private <T> Component validateAndExecute(CommandForm<T> form, CommandSender sender, Object[] args) {
         Context context = new Context(this, form, sender);
         CommandValidator<T, ?> validator = form.getValidator(context, args);
 
@@ -471,9 +476,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 Math.min(currentIndex + 10, inputString.length())) + "'], string index " + currentIndex + ".";
     }
 
-    private void sendErrorMessage(CommandSender sender, String text) {
-        TextComponent component = new TextComponent(text);
-        component.setColor(ChatColor.RED);
-        sender.spigot().sendMessage(component);
+    private void sendErrorMessage(CommandSender sender, Component component) {
+        sender.sendMessage(component);
     }
 }

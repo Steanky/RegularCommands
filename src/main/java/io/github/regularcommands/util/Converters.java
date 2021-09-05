@@ -2,6 +2,7 @@ package io.github.regularcommands.util;
 
 import io.github.regularcommands.converter.ArgumentConverter;
 import io.github.regularcommands.converter.ConversionResult;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 
 import java.lang.reflect.Array;
@@ -18,8 +19,8 @@ public final class Converters {
             return ConversionResult.of(true, new BigDecimal(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be" +
-                    " converted to a BigDecimal.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to a BigDecimal.", argument)));
         }
     };
 
@@ -28,8 +29,8 @@ public final class Converters {
             return ConversionResult.of(true, new BigInteger(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be" +
-                    " converted to a BigInteger.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to a BigInteger.", argument)));
         }
     };
 
@@ -38,8 +39,8 @@ public final class Converters {
             return ConversionResult.of(true, Long.parseLong(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be" +
-                    " converted to a Long.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to a Long.", argument)));
         }
     };
 
@@ -48,8 +49,8 @@ public final class Converters {
             return ConversionResult.of(true, Integer.parseInt(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to an Integer.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to an Integer.", argument)));
         }
     };
 
@@ -58,8 +59,8 @@ public final class Converters {
             return ConversionResult.of(true, Double.parseDouble(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Double.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to a Double.", argument)));
         }
     };
 
@@ -68,8 +69,8 @@ public final class Converters {
             return ConversionResult.of(true, Float.parseFloat(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Float.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to a Float.", argument)));
         }
     };
 
@@ -78,8 +79,8 @@ public final class Converters {
             return ConversionResult.of(true, Short.parseShort(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Short.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to a Short.", argument)));
         }
     };
 
@@ -88,8 +89,8 @@ public final class Converters {
             return ConversionResult.of(true, Byte.parseByte(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Byte.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to a Byte.", argument)));
         }
     };
 
@@ -98,8 +99,8 @@ public final class Converters {
             return ConversionResult.of(true, parseBoolean(argument), null);
         }
         catch (NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Boolean.", argument));
+            return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                    "'%s' cannot be converted to a Boolean.", argument)));
         }
     };
 
@@ -110,8 +111,8 @@ public final class Converters {
             return ConversionResult.of(true, material, null);
         }
 
-        return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                "converted to a Material.", argument));
+        return ConversionResult.of(false, null, Component.text(String.format("The provided value " +
+                "'%s' cannot be converted to a Material.", argument)));
     };
 
     /**

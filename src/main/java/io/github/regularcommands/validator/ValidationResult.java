@@ -1,5 +1,7 @@
 package io.github.regularcommands.validator;
 
+import net.kyori.adventure.text.Component;
+
 import java.util.Objects;
 
 /**
@@ -9,10 +11,10 @@ import java.util.Objects;
  */
 public final class ValidationResult<T> {
     private final boolean valid;
-    private final String errorMessage;
+    private final Component errorMessage;
     private final T data;
 
-    private ValidationResult(boolean valid, String errorMessage, T data) {
+    private ValidationResult(boolean valid, Component errorMessage, T data) {
         if(!valid && data != null) {
             throw new IllegalArgumentException("data cannot be non-null if the ValidationResult is invalid");
         }
@@ -29,7 +31,7 @@ public final class ValidationResult<T> {
      * @param errorMessage The error message, which will only be used if !valid
      * @return The new ValidationResult object
      */
-    public static <T> ValidationResult<T> of(boolean valid, String errorMessage, T data) {
+    public static <T> ValidationResult<T> of(boolean valid, Component errorMessage, T data) {
         return new ValidationResult<>(valid, errorMessage, data);
     }
 
@@ -45,7 +47,7 @@ public final class ValidationResult<T> {
      * The error message that should describe why command validation failed.
      * @return The error message if isValid() returns false, null if it returns true
      */
-    public String getErrorMessage() {
+    public Component getErrorMessage() {
         return errorMessage;
     }
 

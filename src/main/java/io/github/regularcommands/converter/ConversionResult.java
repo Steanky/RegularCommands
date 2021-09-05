@@ -1,5 +1,7 @@
 package io.github.regularcommands.converter;
 
+import net.kyori.adventure.text.Component;
+
 import java.util.Objects;
 
 /**
@@ -9,9 +11,9 @@ import java.util.Objects;
 public class ConversionResult<T> {
     private final boolean valid;
     private final T conversion;
-    private final String errorMessage;
+    private final Component errorMessage;
 
-    private ConversionResult(boolean valid, T conversion, String errorMessage) {
+    private ConversionResult(boolean valid, T conversion, Component errorMessage) {
         this.valid = valid;
         this.conversion = valid ? Objects.requireNonNull(conversion, "conversion cannot be null when valid") : null;
         this.errorMessage = valid ? null : Objects.requireNonNull(errorMessage, "error message cannot be null " +
@@ -26,7 +28,7 @@ public class ConversionResult<T> {
      * @param <T> The type of the object that was converted
      * @return A new ConversionResult object
      */
-    public static <T> ConversionResult<T> of(boolean valid, T conversion, String errorMessage) {
+    public static <T> ConversionResult<T> of(boolean valid, T conversion, Component errorMessage) {
         return new ConversionResult<>(valid, conversion, errorMessage);
     }
 
@@ -50,7 +52,7 @@ public class ConversionResult<T> {
      * The error message that should describe why conversion failed.
      * @return The error message if isValid() returns false, null if it returns true
      */
-    public String getErrorMessage() {
+    public Component getErrorMessage() {
         return errorMessage;
     }
 }

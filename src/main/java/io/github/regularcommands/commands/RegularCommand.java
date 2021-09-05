@@ -5,6 +5,8 @@ import io.github.regularcommands.converter.MatchResult;
 import io.github.regularcommands.converter.Parameter;
 
 import io.github.regularcommands.util.StringUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.command.CommandSender;
 
 import java.util.*;
@@ -17,7 +19,7 @@ import java.util.List;
 public abstract class RegularCommand {
     private final String name;
     private final List<CommandForm<?>> forms;
-    private final StringBuilder usageBuilder;
+    private final TextComponent.Builder usageBuilder;
 
     /**
      * Creates a new RegularCommand with the specified name and list of forms.
@@ -26,7 +28,9 @@ public abstract class RegularCommand {
     public RegularCommand(String name) {
         this.name = Objects.requireNonNull(name, "name cannot be null");
         this.forms = new ArrayList<>();
-        this.usageBuilder = new StringBuilder("Usages for /" + name + ": \n");
+        this.usageBuilder = Component.text()
+                .append(Component.text("Usages for /" + name + ": "))
+                .append(Component.newline());
     }
 
     /**
@@ -36,18 +40,18 @@ public abstract class RegularCommand {
     public void addForm(CommandForm<?> form) {
         forms.add(Objects.requireNonNull(form, "form cannot be null"));
 
-        usageBuilder.append('/').append(getName()).append(' ');
+        usageBuilder.append(Component.text('/')).append(Component.text(getName())).append(Component.space());
 
         for(Parameter parameter : form) {
-            usageBuilder.append(parameter.getUsage()).append(' ');
+            usageBuilder.append(Component.text(parameter.getUsage())).append(Component.space());
         }
 
-        String usage = form.getUsage();
-        if(usage != null && !usage.equals(StringUtils.EMPTY)) {
-            usageBuilder.append("— ").append(usage);
+        Component usage = form.getUsage();
+        if(usage != null && usage != Component.empty()) {
+            usageBuilder.append(Component.text("— ")).append(usage);
         }
 
-        usageBuilder.append('\n');
+        usageBuilder.append(Component.newline());
     }
 
     /**
@@ -62,7 +66,7 @@ public abstract class RegularCommand {
      * Gets the usage string that contains information about all the forms of this command.
      * @return The usage string for this RegularCommand
      */
-    public String getUsage() { return usageBuilder.toString(); }
+    public Component getUsage() { return usageBuilder.build(); }
 
     /**
      * Returns a list of all CommandForm objects that match the provided argument array.
