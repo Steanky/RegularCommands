@@ -153,7 +153,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                             CommandForm<?> form = match.getForm();
                             Component output = validateAndExecute(form, commandSender, conversionResult.getConversion());
 
-                            if(output != null) { //we have something to display
+                            if(output != null && output != Component.empty()) { //we have something to display
                                 /*
                                 if(form.canStylize()) { //stylize if we can
                                     //let BadFormatExceptions propagate! they are the fault of the library user
