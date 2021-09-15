@@ -1,5 +1,6 @@
 package io.github.regularcommands.util;
 
+import io.github.regularcommands.message.DefaultMessages;
 import io.github.regularcommands.validator.CommandValidator;
 import io.github.regularcommands.validator.ValidationResult;
 import org.bukkit.command.BlockCommandSender;
@@ -19,7 +20,8 @@ public final class Validators {
             return ValidationResult.of(true, null, (Entity)sender);
         }
 
-        return ValidationResult.of(false, "Only entities can execute that command.", null);
+        return ValidationResult.of(false, context.getManager().getMessageResources()
+                .namedComponent(DefaultMessages.ERROR_ENTITY_EXECUTOR), null);
     });
 
     public static CommandValidator<Player, ?> PLAYER_EXECUTOR = new CommandValidator<>((context, form, arguments) -> {
@@ -28,7 +30,8 @@ public final class Validators {
             return ValidationResult.of(true, null, (Player)sender);
         }
 
-        return ValidationResult.of(false, "Only players can execute that command.", null);
+        return ValidationResult.of(false, context.getManager().getMessageResources()
+                .namedComponent(DefaultMessages.ERROR_PLAYER_EXECUTOR), null);
     });
 
     public static CommandValidator<ConsoleCommandSender, ?> CONSOLE_EXECUTOR = new CommandValidator<>((context, form, arguments) -> {
@@ -37,7 +40,8 @@ public final class Validators {
             return ValidationResult.of(true, null, (ConsoleCommandSender)sender);
         }
 
-        return ValidationResult.of(false, "Only consoles can execute that command.", null);
+        return ValidationResult.of(false, context.getManager().getMessageResources()
+                .namedComponent(DefaultMessages.ERROR_CONSOLE_EXECUTOR), null);
     });
 
     public static CommandValidator<BlockCommandSender, ?> BLOCK_EXECUTOR = new CommandValidator<>((context, form, arguments) -> {
@@ -46,6 +50,7 @@ public final class Validators {
             return ValidationResult.of(true, null, (BlockCommandSender)sender);
         }
 
-        return ValidationResult.of(false, "Only command blocks can execute that command.", null);
+        return ValidationResult.of(false, context.getManager().getMessageResources()
+                .namedComponent(DefaultMessages.ERROR_BLOCK_EXECUTOR), null);
     });
 }

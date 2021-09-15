@@ -1,5 +1,8 @@
 package io.github.regularcommands.converter;
 
+import io.github.regularcommands.commands.CommandForm;
+import org.jetbrains.annotations.NotNull;
+
 public interface ArgumentConverter<T> {
     /**
      * Converts the argument into a type of object, returning information about the success of the conversion, the
@@ -7,5 +10,5 @@ public interface ArgumentConverter<T> {
      * @param argument The argument to be converted
      * @return A ConversionResult object representing the result of the conversion
      */
-    ConversionResult<T> convert(String argument);
+    @NotNull ConversionResult<T> convert(@NotNull CommandForm<?> form, @NotNull String argument);
 }

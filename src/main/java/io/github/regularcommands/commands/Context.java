@@ -1,6 +1,7 @@
 package io.github.regularcommands.commands;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -17,7 +18,7 @@ public class Context {
      * @param manager The CommandManager
      * @param sender The CommandSender
      */
-    public Context(CommandManager manager, CommandForm<?> form, CommandSender sender) {
+    public Context(@NotNull CommandManager manager, @NotNull CommandForm<?> form, @NotNull  CommandSender sender) {
         this.manager = Objects.requireNonNull(manager, "manager cannot be null");
         this.sender = Objects.requireNonNull(sender, "sender cannot be null");
         this.form = Objects.requireNonNull(form, "form cannot be null");
@@ -27,17 +28,17 @@ public class Context {
      * Gets the manager object.
      * @return The manager stored in this Context object
      */
-    public CommandManager getManager() { return manager; }
+    public @NotNull CommandManager getManager() { return manager; }
 
     /**
      * Gets the CommandSender object.
      * @return The CommandSender stored in this Context object
      */
-    public CommandSender getSender() {
+    public @NotNull CommandSender getSender() {
         return sender;
     }
 
-    public CommandForm<?> getForm() {
+    public @NotNull CommandForm<?> getForm() {
         return form;
     }
 }

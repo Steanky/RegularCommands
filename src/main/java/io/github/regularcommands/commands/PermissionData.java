@@ -2,6 +2,7 @@ package io.github.regularcommands.commands;
 
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class PermissionData {
      * @param permissions The set of required permissions
      * @param requiresOp Whether or not operator should be required
      */
-    public PermissionData(Set<Permission> permissions, boolean requiresOp) {
+    public PermissionData(@NotNull Set<Permission> permissions, boolean requiresOp) {
         this.permissions = new HashSet<>(permissions);
         this.requiresOp = requiresOp;
     }
@@ -27,7 +28,7 @@ public class PermissionData {
      * Creates a new PermissionData object with the specified permissions set, without requiring operator.
      * @param permissions The set of required permissions
      */
-    public PermissionData(Set<Permission> permissions) {
+    public PermissionData(@NotNull Set<Permission> permissions) {
         this(permissions, false);
     }
 
@@ -49,9 +50,9 @@ public class PermissionData {
     /**
      * Tests if the provided Permissible has all the permissions specified by this PermissionData object.
      * @param permissible The Permissible to test for
-     * @return Whether or not the Permissible has, at minimum, all the required permissions
+     * @return True if the Permissible has, at minimum, all the required permissions. False otherwise
      */
-    public boolean validateFor(Permissible permissible) {
+    public boolean validateFor(@NotNull Permissible permissible) {
         return (!requiresOp || permissible.isOp()) && permissions.stream().allMatch(permissible::hasPermission);
     }
 }

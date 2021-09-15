@@ -1,7 +1,8 @@
 package io.github.regularcommands.completer;
 
-import io.github.regularcommands.commands.CommandForm;
 import io.github.regularcommands.commands.Context;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class ArgumentCompleter {
      * @param step The completion step
      * @param depend The ArgumentCompleter whose output will be added to this instance's
      */
-    public ArgumentCompleter(CompletionStep step, ArgumentCompleter depend) {
+    public ArgumentCompleter(@NotNull CompletionStep step, @Nullable ArgumentCompleter depend) {
         this.step = step;
         this.depend = depend;
     }
@@ -27,7 +28,7 @@ public class ArgumentCompleter {
      * Creates a new ArgumentCompleter object with the specified CompletionStep.
      * @param step The completion step
      */
-    public ArgumentCompleter(CompletionStep step) {
+    public ArgumentCompleter(@NotNull CompletionStep step) {
         this(step, null);
     }
 
@@ -37,7 +38,7 @@ public class ArgumentCompleter {
      * @param args A potentially incomplete list of arguments
      * @return A list of strings corresponding to potential completions, or null if there are none
      */
-    public List<String> complete(Context context, String[] args) {
+    public List<String> complete(@NotNull Context context, @NotNull String[] args) {
         if(depend == null) {
             return step.complete(context, args);
         }

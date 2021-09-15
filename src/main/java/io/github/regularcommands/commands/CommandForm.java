@@ -9,6 +9,8 @@ import io.github.regularcommands.util.ArrayUtils;
 import io.github.regularcommands.util.Completers;
 import io.github.regularcommands.util.StringUtils;
 import io.github.regularcommands.validator.CommandValidator;
+import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -16,8 +18,8 @@ import java.util.Objects;
 
 /**
  * Defines a specific form of a command. Subclasses define the action taken by the command when it is executed, as well
- * as the determine whether or not it should be executed based off of various conditions. CommandForm objects are
- * immutable. They also implement the Iterable interface, which can be used to loop through their parameters.
+ * as determine if it should be executed based off of various conditions. CommandForm objects are immutable. They also
+ * implement the Iterable interface, which can be used to loop through their defining {@link Parameter} instances.
  */
 public abstract class CommandForm<T> implements Iterable<Parameter> {
     private final class ParameterIterator implements Iterator<Parameter> {
@@ -25,15 +27,16 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
 
         @Override
         public boolean hasNext() {
-            return ++index < parameters.length;
+            return index + 1 < parameters.length;
         }
 
         @Override
         public Parameter next() {
-            return parameters[index];
+            return parameters[++index];
         }
     }
 
+    private final RegularCommand command;
     private final String usage;
     private final Parameter[] parameters;
     private final PermissionData permissions;
@@ -58,7 +61,9 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * @param permissionData The permissions required to execute this command
      * @param parameters The parameters array that defines the signature of this command
      */
-    public CommandForm(String usage, PermissionData permissionData, Parameter... parameters) {
+    public CommandForm(@NotNull RegularCommand command, @NotNull String usage, @NotNull PermissionData permissionData,
+                       @NotNull Parameter... parameters) {
+        this.command = Objects.requireNonNull(command, "command cannot be null");
         this.usage = Objects.requireNonNull(usage, "usage cannot be null");
         this.permissions = Objects.requireNonNull(permissionData, "metadata cannot be null");
         this.parameters = Objects.requireNonNull(parameters, "parameters cannot be null");
@@ -68,6 +73,8 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
         int reqLen = 0;
 
         for (Parameter value : parameters) { //validate parameter array
+            Objects.requireNonNull(value, "parameter cannot be null");
+
             if (vararg) { //can't have varargs before non-varargs
                 throw new IllegalArgumentException("varargs parameter must be the last parameter");
             }
@@ -103,7 +110,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * Returns a copy of the parameters array.
      * @return A copy of the parameters array
      */
-    public Parameter[] getParameters() {
+    public @NotNull Parameter[] getParameters() {
         return Arrays.copyOf(parameters, parameters.length);
     }
 
@@ -113,7 +120,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * @param parameterIndex The index of the desired parameter
      * @return The parameter located at the given index
      */
-    public Parameter getParameter(int parameterIndex) {
+    public @NotNull Parameter getParameter(int parameterIndex) {
         return parameters[parameterIndex];
     }
 
@@ -122,7 +129,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * @return An iterator that iterates over this CommandForm's parameters
      */
     @Override
-    public Iterator<Parameter> iterator() {
+    public @NotNull Iterator<Parameter> iterator() {
         return new ParameterIterator();
     }
 
@@ -143,7 +150,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * @param args The complete input argument array
      * @return A MatchResult argument containing information about the match attempt
      */
-    public MatchResult matches(String[] args) {
+    public @NotNull MatchResult matches(String[] args) {
         if(args.length == 0) { //optimization for zero-length parameters
             boolean matches = parameters.length == 0;
             return new MatchResult(this, true, matches, matches ? ConversionResult.of(true,
@@ -187,7 +194,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
                 conversionResult = ConversionResult.of(true, input, null);
             }
             else {
-                conversionResult = parameter.getConverter().convert(input);
+                conversionResult = parameter.getConverter().convert(this, input);
             }
 
             if(conversionResult.isValid()) { //successful conversion
@@ -210,7 +217,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * @param args The arguments, which may be incomplete.
      * @return The match score for the provided arguments
      */
-    public int matchScore(String[] args) {
+    public int matchScore(@NotNull String[] args) {
         if(parameters.length == 0 || !vararg && args.length > requiredLength) {
             return -1;
         }
@@ -243,6 +250,14 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
     }
 
     /**
+     * Returns the RegularCommand instance this form is registered under
+     * @return The parent RegularCommand
+     */
+    public @NotNull RegularCommand getCommand() {
+        return command;
+    }
+
+    /**
      * Returns a short, user-friendly string that should explain what the form does.
      * @return A user-friendly string explaining what the CommandForm does
      */
@@ -262,6 +277,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * If false, the text returned by execute() will be treated as plaintext. If true, it will be stylized.
      * @return Whether or not this CommandForm stylizes
      */
+    @Deprecated
     public boolean canStylize() { return false; }
 
     /**
@@ -301,5 +317,5 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * @param data A data object, which if non-null was generated by this form's validator
      * @return A message that will be displayed to the player, and formatted if getStylizer() doesn't return null
      */
-    public abstract String execute(Context context, Object[] arguments, T data);
+    public abstract Component execute(Context context, Object[] arguments, T data);
 }

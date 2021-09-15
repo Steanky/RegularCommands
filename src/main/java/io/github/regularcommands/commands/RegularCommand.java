@@ -6,6 +6,7 @@ import io.github.regularcommands.converter.Parameter;
 
 import io.github.regularcommands.util.StringUtils;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  * have a unique name (which is used to identify it) and a user-friendly usage string.
  */
 public abstract class RegularCommand {
+    private final CommandManager manager;
     private final String name;
     private final List<CommandForm<?>> forms;
     private final StringBuilder usageBuilder;
@@ -23,7 +25,8 @@ public abstract class RegularCommand {
      * Creates a new RegularCommand with the specified name and list of forms.
      * @param name The name of the RegularCommand
      */
-    public RegularCommand(String name) {
+    public RegularCommand(@NotNull CommandManager manager, @NotNull String name) {
+        this.manager = manager;
         this.name = Objects.requireNonNull(name, "name cannot be null");
         this.forms = new ArrayList<>();
         this.usageBuilder = new StringBuilder("Usages for /" + name + ": \n");
@@ -33,7 +36,7 @@ public abstract class RegularCommand {
      * Adds a form to this RegularCommand.
      * @param form The form to add
      */
-    public void addForm(CommandForm<?> form) {
+    public void addForm(@NotNull CommandForm<?> form) {
         forms.add(Objects.requireNonNull(form, "form cannot be null"));
 
         usageBuilder.append('/').append(getName()).append(' ');
@@ -51,10 +54,18 @@ public abstract class RegularCommand {
     }
 
     /**
+     * Gets the manager associated with this RegularCommand
+     * @return The manager associated with this command
+     */
+    public @NotNull CommandManager getManager() {
+        return manager;
+    }
+
+    /**
      * Gets the name of this RegularCommand.
      * @return The name of this RegularCommand
      */
-    public String getName() {
+    public @NotNull String getName() {
         return name;
     }
 
@@ -62,7 +73,7 @@ public abstract class RegularCommand {
      * Gets the usage string that contains information about all the forms of this command.
      * @return The usage string for this RegularCommand
      */
-    public String getUsage() { return usageBuilder.toString(); }
+    public @NotNull String getUsage() { return usageBuilder.toString(); }
 
     /**
      * Returns a list of all CommandForm objects that match the provided argument array.
@@ -70,7 +81,7 @@ public abstract class RegularCommand {
      * @param sender The CommandSender that is attempting to run this command
      * @return All matching command forms, or an empty list if none exist
      */
-    public List<MatchResult> getMatches(String[] args, CommandSender sender) {
+    public @NotNull List<MatchResult> getMatches(@NotNull String[] args, @NotNull CommandSender sender) {
         List<MatchResult> matches = new ArrayList<>();
         for(CommandForm<?> form : forms) {
             //check permissions before running relatively expensive matching algorithm
@@ -98,7 +109,8 @@ public abstract class RegularCommand {
      *             empty array
      * @return A list containing tab completions, or an empty list if none exist
      */
-    public List<String> getCompletions(CommandManager manager, CommandSender sender, String[] args) {
+    public @NotNull List<String> getCompletions(@NotNull CommandManager manager, @NotNull CommandSender sender,
+                                                @NotNull String[] args) {
         List<String> possibleCompletions = new ArrayList<>();
 
         for(CommandForm<?> form : forms) {

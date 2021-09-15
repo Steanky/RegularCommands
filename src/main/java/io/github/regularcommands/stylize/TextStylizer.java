@@ -8,6 +8,7 @@ import java.util.*;
 /**
  * This is used to store stylization information.
  */
+@Deprecated
 public class TextStylizer {
     private final Map<String, ComponentSettings> formatters;
 

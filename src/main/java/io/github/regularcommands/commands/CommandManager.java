@@ -2,17 +2,21 @@ package io.github.regularcommands.commands;
 
 import io.github.regularcommands.converter.ConversionResult;
 import io.github.regularcommands.converter.MatchResult;
+import io.github.regularcommands.message.BasicMessageResources;
+import io.github.regularcommands.message.DefaultMessages;
+import io.github.regularcommands.message.MessageResources;
 import io.github.regularcommands.stylize.ComponentSettings;
 import io.github.regularcommands.stylize.TextStylizer;
 import io.github.regularcommands.util.ArrayUtils;
 import io.github.regularcommands.util.StringUtils;
 import io.github.regularcommands.validator.CommandValidator;
 import io.github.regularcommands.validator.ValidationResult;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -21,16 +25,16 @@ import java.util.logging.Logger;
  * This class keeps track of all registered commands and includes some utility functions.
  */
 public class CommandManager implements CommandExecutor, TabCompleter {
-    private static class SimpleCommand extends RegularCommand {
-        public SimpleCommand(String name) {
-            super(name);
+    private class SimpleCommand extends RegularCommand {
+        private SimpleCommand(String name) {
+            super(CommandManager.this, name);
         }
     }
 
     private final Plugin plugin;
+    private final MessageResources messageResources;
     private final Logger logger;
     private final Map<String, RegularCommand> commands;
-    private final TextStylizer stylizer; //used to stylize text
 
     private final StringBuilder BUFFER = new StringBuilder(); //used for internal string parsing
 
@@ -40,18 +44,18 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * Creates a new CommandManager and associates it with the specified plugin.
      * @param plugin The associated plugin
      */
-    public CommandManager(Plugin plugin) {
+    public CommandManager(@NotNull Plugin plugin, @NotNull MessageResources messageResources) {
         this.plugin = Objects.requireNonNull(plugin, "plugin cannot be null");
+        this.messageResources = Objects.requireNonNull(messageResources, "messageResources cannot be null");
         logger = plugin.getLogger();
         commands = new HashMap<>();
-        stylizer = new TextStylizer();
     }
 
     /**
      * Registers a RegularCommand with this manager.
      * @param command The RegularCommand to register
      */
-    public void registerCommand(RegularCommand command) {
+    public void registerCommand(@NotNull RegularCommand command) {
         String name = Objects.requireNonNull(command, "command cannot be null").getName();
 
         if(!commands.containsKey(name)) {
@@ -71,16 +75,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * @param name The name of the command
      * @return The RegularCommand with the given unique name, or null if it doesn't exist
      */
-    public RegularCommand getCommand(String name) {
+    public RegularCommand getCommand(@NotNull String name) {
         return commands.get(name);
     }
 
     /**
-     * Returns whether or not a RegularCommand with the given name has been registered.
+     * Returns if a RegularCommand with the given name has been registered.
      * @param name The name of the command
-     * @return Whether or not it has been registered
+     * @return if it has been registered
      */
-    public boolean hasCommand(String name) {
+    public boolean hasCommand(@NotNull String name) {
         return commands.containsKey(name);
     }
 
@@ -88,7 +92,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * Returns the JavaPlugin this CommandManager instance is attached to.
      * @return The associated JavaPlugin
      */
-    public Plugin getPlugin() {
+    public @NotNull Plugin getPlugin() {
         return plugin;
     }
 
@@ -96,33 +100,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * Returns the logger used by this instance, which is the same logger that is used by the bound JavaPlugin.
      * @return The associated Logger
      */
-    public Logger getLogger() { return logger; }
+    public @NotNull Logger getLogger() { return logger; }
 
-    /**
-     * Returns the TextStylizer used to stylize command return values
-     * @return The TextStylizer used by this instance
-     */
-    public TextStylizer getStylizer() { return stylizer; }
-
-    /**
-     * Sends a player a formatted message, which is stylized according to the same rules as text returned from a
-     * CommandForm. This should never be called from an asynchronous context, as it will likely corrupt the internal
-     * buffer used for parsing input.
-     * @param player The player to send the message to
-     * @param message The message to send
-     */
-    public void sendStylizedMessage(Player player, String message) {
-        player.spigot().sendMessage(parseStylizedMessage(message));
-    }
-
-    /**
-     * Broadcasts the formatted message to the entire server, which will be stylized according to the same rules as text
-     * returned from a CommandForm. This should never be called from an asynchronous context, as it will likely corrupt
-     * the internal buffer used for parsing input.
-     * @param message The message to broadcast
-     */
-    public void broadcastStylizedMessage(String message) {
-        plugin.getServer().spigot().broadcast(parseStylizedMessage(message));
+    public @NotNull MessageResources getMessageResources() {
+        return messageResources;
     }
 
     /**
@@ -132,13 +113,14 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * @param name The name of the command to register the form under
      * @param form The CommandForm instance to register
      */
-    public void registerForm(String name, CommandForm<?> form) {
+    public void registerForm(@NotNull String name, @NotNull CommandForm<?> form) {
         commands.computeIfAbsent(name, SimpleCommand::new).addForm(form);
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        RegularCommand regularCommand = commands.get(command.getName());
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
+                             @NotNull String label, @NotNull String[] args) {
+        RegularCommand regularCommand = getCommand(command.getName());
 
         if(regularCommand != null) {
             List<MatchResult> matches = regularCommand.getMatches(parse(args), commandSender); //get all matches
@@ -150,24 +132,18 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
                         if(conversionResult.isValid()) { //conversion was a success
                             CommandForm<?> form = match.getForm();
-                            String output = validateAndExecute(form, commandSender, conversionResult.getConversion());
+                            Component output = validateAndExecute(form, commandSender, conversionResult.getConversion());
 
                             if(output != null) { //we have something to display
-                                if(form.canStylize()) { //stylize if we can
-                                    //let BadFormatExceptions propagate! they are the fault of the library user
-                                    commandSender.spigot().sendMessage(parseStylizedMessage(output));
-                                }
-                                else { //send raw output because this command doesn't support stylization
-                                    commandSender.sendMessage(output);
-                                }
+                                commandSender.sendMessage(output);
                             }
                         }
                         else { //conversion error
-                            sendErrorMessage(commandSender, conversionResult.getErrorMessage());
+                            commandSender.sendMessage(conversionResult.getErrorMessage());
                         }
                     }
                     else { //sender does not have the required permissions
-                        sendErrorMessage(commandSender, "You do not have permission to execute this command.");
+                        commandSender.sendMessage(messageResources.namedComponent(DefaultMessages.ERROR_NO_PERMISSION));
                     }
                 }
             }
@@ -176,18 +152,15 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             }
         }
         else {
-            logger.severe(String.format("CommandSender '%s' tried to execute command '%s', which should not be " +
+            getLogger().warning(String.format("CommandSender '%s' tried to execute command '%s', which should not be " +
                     "possible due to it not being present in the command map.", commandSender.getName(),
                     command.getName()));
-
-            sendErrorMessage(commandSender, "That command has been registered with this manager, but was unable " +
-                    "to be found in the internal mappings. Report this error to your server admins.");
         }
 
         return true;
     }
 
-    private <T> String validateAndExecute(CommandForm<T> form, CommandSender sender, Object[] args) {
+    private <T> Component validateAndExecute(CommandForm<T> form, CommandSender sender, Object[] args) {
         Context context = new Context(this, form, sender);
         CommandValidator<T, ?> validator = form.getValidator(context, args);
 
@@ -198,7 +171,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 return form.execute(context, args, result.getData());
             }
             else {
-                sendErrorMessage(context.getSender(), result.getErrorMessage());
+                sender.sendMessage(result.getErrorMessage());
             }
         }
         else {
@@ -209,7 +182,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command,
+                                      @NotNull String label, @NotNull String[] args) {
         if(args.length > 0) { //possibly redundant, needs testing
             RegularCommand regularCommand = commands.get(command.getName());
 
@@ -269,211 +243,5 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         }
 
         return result.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
-    }
-
-    /**
-     * Converts an input string into an array of TextComponents using RegularCommand's formatting rules, which are
-     * defined as follows:
-     *
-     * <p>&gt;modifiers{text} unaffected-text &gt;more-modifiers|additional-modifier{more-text}</p>
-     *
-     * <p>For example, the following would appear as red, underlined text:</p>
-     *
-     * <p>&gt;red|underlined{This text is red and underlined.}</p>
-     *
-     * <p>This engine supports all of Minecraft's built-in effects. Custom ones, including embedded links and other
-     * advanced features, can be registered via this manager's TextStylizer.</p>
-     *
-     * <p>If the format is syntactically invalid, a BadFormatException will be thrown. It is recommended to run user input
-     * through StringUtils#escapify before passing it through this function, as it will properly escape any special
-     * characters.</p>
-     * @param input The input text
-     * @return An array of TextComponents.
-     */
-    public TextComponent[] parseStylizedMessage(String input) {
-        BUFFER.setLength(0);
-
-        List<TextComponent> components = new ArrayList<>();
-        List<ComponentSettings> componentFormatters = new ArrayList<>();
-
-        boolean escape = false;
-        boolean name = false;
-        boolean component = false;
-        int i = 0;
-        for(; i < input.length(); i++) {
-            char character = input.charAt(i);
-            switch (character) {
-                case '{':
-                    if(!escape) {
-                        if(component) {
-                            throw new BadFormatException(formatStylizerError("Unescaped curly " +
-                                    "bracket (nested groups are not allowed).", input, i));
-                        }
-
-                        if(!name) {
-                            throw new BadFormatException(formatStylizerError("Format groups " +
-                                    "must specify at least one valid formatter name.", input, i));
-                        }
-
-                        if(BUFFER.length() > 0) {
-                            String formatterName = BUFFER.toString();
-                            ComponentSettings formatter = stylizer.getComponent(formatterName);
-
-                            if(formatter != null) {
-                                name = false;
-                                component = true;
-
-                                componentFormatters.add(formatter);
-                                BUFFER.setLength(0);
-                            }
-                            else {
-                                throw new BadFormatException(formatStylizerError("Formatter '" + formatterName +
-                                        "' does not exist.", input, i));
-                            }
-                        }
-                        else {
-                            throw new BadFormatException(formatStylizerError("Format groups " +
-                                    "must specify at least one valid formatter name.", input, i));
-                        }
-                    }
-                    else {
-                        BUFFER.append(character);
-                        escape = false;
-                    }
-                    break;
-                case '}':
-                    if(!escape) {
-                        if(name) {
-                            throw new BadFormatException(formatStylizerError("Unescaped " +
-                                    "close bracket in name specifier.", input, i));
-                        }
-
-                        if(!component) {
-                            throw new BadFormatException(formatStylizerError("Unescaped close bracket in " +
-                                    "non-component region.", input, i));
-                        }
-
-                        if(componentFormatters.size() > 0) {
-                            TextComponent textComponent = new TextComponent(BUFFER.toString());
-
-                            for(ComponentSettings formatter : componentFormatters) {
-                                formatter.apply(textComponent);
-                            }
-
-                            components.add(textComponent);
-                            componentFormatters.clear();
-
-                            component = false;
-                            BUFFER.setLength(0);
-                        }
-                        else {
-                            throw new BadFormatException(formatStylizerError("You must specify at least one " +
-                                    "formatter.", input, i));
-                        }
-                    }
-                    else {
-                        BUFFER.append(character);
-                        escape = false;
-                    }
-                    break;
-                case '>':
-                    if(!escape) {
-                        if(name) {
-                            throw new BadFormatException(formatStylizerError("Unescaped name specifier token " +
-                                    "in already present name specifier.", input, i));
-                        }
-
-                        if(component) {
-                            throw new BadFormatException(formatStylizerError("Unescaped name specifier token " +
-                                    "in component (nested components are not allowed).", input, i));
-                        }
-
-                        if(BUFFER.length() > 0) {
-                            components.add(new TextComponent(BUFFER.toString()));
-                            BUFFER.setLength(0);
-                        }
-
-                        name = true;
-                    }
-                    else {
-                        BUFFER.append(character);
-                        escape = false;
-                    }
-                    break;
-                case '\\':
-                    if(!escape) {
-                        escape = true;
-                    }
-                    else {
-                        BUFFER.append(character);
-                        escape = false;
-                    }
-                    break;
-                case '|':
-                    if(!escape) {
-                        if(name) {
-                            if(BUFFER.length() > 0) {
-                                String formatterName = BUFFER.toString();
-                                ComponentSettings formatter = stylizer.getComponent(formatterName);
-
-                                if(formatter != null) {
-                                    componentFormatters.add(formatter);
-                                    BUFFER.setLength(0);
-                                }
-                                else {
-                                    throw new BadFormatException(formatStylizerError("Formatter '" +
-                                            formatterName + "' does not exist or has not been registered.", input, i));
-                                }
-                            }
-                            else {
-                                throw new BadFormatException(formatStylizerError("Invalid component formatter " +
-                                        "name; cannot be an empty string.", input, i));
-                            }
-                        }
-                        else {
-                            throw new BadFormatException(formatStylizerError("Unexpected formatter name " +
-                                    "delimiter.", input, i));
-                        }
-                    }
-                    else {
-                        BUFFER.append(character);
-                        escape = false;
-                    }
-                    break;
-                default:
-                    BUFFER.append(character);
-                    escape = false;
-                    break;
-            }
-        }
-
-        if(name) {
-            throw new BadFormatException(formatStylizerError("Unfinished format name specifier.", input, i));
-        }
-
-        if(component) {
-            throw new BadFormatException(formatStylizerError("Unfinished text component.", input, i));
-        }
-
-        if(BUFFER.length() > 0) {
-            components.add(new TextComponent(BUFFER.toString()));
-        }
-
-        return components.toArray(ArrayUtils.EMPTY_TEXT_COMPONENT_ARRAY);
-    }
-
-    private String formatStylizerError(String message, String inputString, int currentIndex) {
-        if(message == null || message.length() == 0) {
-            return "Stylization error: empty or null message";
-        }
-
-        return "Stylization error: " + message + " ~@['" + inputString.substring(Math.max(currentIndex - 10, 0),
-                Math.min(currentIndex + 10, inputString.length())) + "'], string index " + currentIndex + ".";
-    }
-
-    private void sendErrorMessage(CommandSender sender, String text) {
-        TextComponent component = new TextComponent(text);
-        component.setColor(ChatColor.RED);
-        sender.spigot().sendMessage(component);
     }
 }

@@ -2,6 +2,9 @@ package io.github.regularcommands.util;
 
 import io.github.regularcommands.converter.ArgumentConverter;
 import io.github.regularcommands.converter.ConversionResult;
+import io.github.regularcommands.message.DefaultMessages;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import org.bukkit.Material;
 
 import java.lang.reflect.Array;
@@ -13,105 +16,105 @@ import java.util.Objects;
  * Utility class containing built-in converters and helper methods.
  */
 public final class Converters {
-    public final static ArgumentConverter<BigDecimal> BIG_DECIMAL_CONVERTER = argument -> {
+    public final static ArgumentConverter<BigDecimal> BIG_DECIMAL_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, new BigDecimal(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be" +
-                    " converted to a BigDecimal.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_BIG_DECIMAL).args(Component.text(argument)));
         }
     };
 
-    public final static ArgumentConverter<BigInteger> BIG_INTEGER_CONVERTER = argument -> {
+    public final static ArgumentConverter<BigInteger> BIG_INTEGER_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, new BigInteger(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be" +
-                    " converted to a BigInteger.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_BIG_INTEGER).args(Component.text(argument)));
         }
     };
 
-    public final static ArgumentConverter<Long> LONG_CONVERTER = argument -> {
+    public final static ArgumentConverter<Long> LONG_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, Long.parseLong(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be" +
-                    " converted to a Long.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_LONG).args(Component.text(argument)));
         }
     };
 
-    public final static ArgumentConverter<Integer> INTEGER_CONVERTER = argument -> {
+    public final static ArgumentConverter<Integer> INTEGER_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, Integer.parseInt(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to an Integer.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_INTEGER).args(Component.text(argument)));
         }
     };
 
-    public final static ArgumentConverter<Double> DOUBLE_CONVERTER = argument -> {
+    public final static ArgumentConverter<Double> DOUBLE_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, Double.parseDouble(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Double.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_DOUBLE).args(Component.text(argument)));
         }
     };
 
-    public final static ArgumentConverter<Float> FLOAT_CONVERTER = argument -> {
+    public final static ArgumentConverter<Float> FLOAT_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, Float.parseFloat(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Float.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_FLOAT).args(Component.text(argument)));
         }
     };
 
-    public final static ArgumentConverter<Short> SHORT_CONVERTER = argument -> {
+    public final static ArgumentConverter<Short> SHORT_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, Short.parseShort(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Short.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_SHORT).args(Component.text(argument)));
         }
     };
 
-    public final static ArgumentConverter<Byte> BYTE_CONVERTER = argument -> {
+    public final static ArgumentConverter<Byte> BYTE_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, Byte.parseByte(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Byte.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_BYTE).args(Component.text(argument)));
         }
     };
 
-    public final static ArgumentConverter<Boolean> BOOLEAN_CONVERTER = argument -> {
+    public final static ArgumentConverter<Boolean> BOOLEAN_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, parseBoolean(argument), null);
         }
         catch (NumberFormatException e) {
-            return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                    "converted to a Boolean.", argument));
+            return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                    .namedComponent(DefaultMessages.ERROR_CONVERT_BOOLEAN).args(Component.text(argument)));
         }
     };
 
-    public static final ArgumentConverter<Material> MATERIAL_CONVERTER = argument -> {
+    public static final ArgumentConverter<Material> MATERIAL_CONVERTER = (form, argument) -> {
         Material material = Material.getMaterial(argument);
 
         if(material != null) {
             return ConversionResult.of(true, material, null);
         }
 
-        return ConversionResult.of(false, null, String.format("The provided value '%s' cannot be " +
-                "converted to a Material.", argument));
+        return ConversionResult.of(false, null, form.getCommand().getManager().getMessageResources()
+                .namedComponent(DefaultMessages.ERROR_CONVERT_MATERIAL).args(Component.text(argument)));
     };
 
     /**
@@ -129,7 +132,7 @@ public final class Converters {
         Objects.requireNonNull(delimiter, "delimiter cannot be null");
         Objects.requireNonNull(arrayType, "arrayType cannot be null");
 
-        return argument -> {
+        return (form, argument) -> {
             String[] components = argument.split(delimiter);
             if(components.length == 0) {
                 //noinspection unchecked
@@ -141,7 +144,7 @@ public final class Converters {
 
             for(int i = 0; i < components.length; i++) {
                 String component = components[i];
-                ConversionResult<T> result = elementConverter.convert(component);
+                ConversionResult<T> result = elementConverter.convert(form, component);
 
                 if(result.isValid()) {
                     resultingArray[i] = result.getConversion();
