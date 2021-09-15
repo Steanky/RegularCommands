@@ -2,19 +2,14 @@ package io.github.regularcommands.commands;
 
 import io.github.regularcommands.converter.ConversionResult;
 import io.github.regularcommands.converter.MatchResult;
-import io.github.regularcommands.message.BasicMessageResources;
 import io.github.regularcommands.message.DefaultMessages;
 import io.github.regularcommands.message.MessageResources;
-import io.github.regularcommands.stylize.ComponentSettings;
-import io.github.regularcommands.stylize.TextStylizer;
 import io.github.regularcommands.util.ArrayUtils;
 import io.github.regularcommands.util.StringUtils;
 import io.github.regularcommands.validator.CommandValidator;
 import io.github.regularcommands.validator.ValidationResult;
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.*;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
