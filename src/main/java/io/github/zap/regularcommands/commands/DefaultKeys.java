@@ -23,11 +23,11 @@ public enum DefaultKeys {
     ERROR_CONVERT_MATERIAL("feedback.error.convert.material","Value {0} cannot be converted to a Material!");
 
     private final String key;
-    private final String defaultLocalization;
+    private final String defaultPattern;
 
-    DefaultKeys(String key, String defaultLocalization) {
+    DefaultKeys(String key, String defaultPattern) {
         this.key = key;
-        this.defaultLocalization = defaultLocalization;
+        this.defaultPattern = defaultPattern;
     }
 
     public @NotNull String key() {
@@ -35,6 +35,6 @@ public enum DefaultKeys {
     }
 
     public @NotNull String getDefaultPattern() {
-        return defaultLocalization;
+        return defaultPattern;
     }
 }
