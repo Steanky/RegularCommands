@@ -189,8 +189,8 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
                 return new MatchResult(this, true, false, null);
             }
 
-            ArgumentConverter<Object> converter = parameter.getConverter();
-            ConversionResult<Object> conversionResult;
+            ArgumentConverter<?> converter = parameter.getConverter();
+            ConversionResult<?> conversionResult;
 
             if(converter == null) {
                 conversionResult = ConversionResult.of(true, input, null);
@@ -271,16 +271,16 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * Returns the PermissionData, which is used to determine if the form can be executed based on the sender.
      * @return The PermissionData object
      */
-    public PermissionData getPermissions() {
+    public @NotNull PermissionData getPermissions() {
         return permissions;
     }
 
     /**
      * Gets the argument completer object that is used to tab complete an argument array that partially matches this
-     * form.
+     * form. If null, tab completion implementations will not attempt to tab-complete this form.
      * @return The tab completer to use. If not overridden, defaults to Completers.PARAMETER_COMPLETER
      */
-    public ArgumentCompleter getCompleter() {
+    public @Nullable ArgumentCompleter getCompleter() {
         return Completers.PARAMETER_COMPLETER;
     }
 

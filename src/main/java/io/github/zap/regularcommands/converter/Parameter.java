@@ -1,7 +1,7 @@
 package io.github.zap.regularcommands.converter;
 
-import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class Parameter {
             case SIMPLE:
                 this.pattern = null;
                 this.match = Objects.requireNonNull(definition, "definition cannot be null for ParameterType.SIMPLE");
-                this.staticCompletionOptions = Lists.newArrayList(definition);
+                this.staticCompletionOptions = List.of(definition);
                 this.defaultValue = null;
                 break;
             case OPTIONAL:
@@ -264,7 +264,7 @@ public class Parameter {
      * Gets the converter used to transform the argument string.
      * @return This parameter's associated converter
      */
-    public ArgumentConverter<Object> getConverter() {
+    public ArgumentConverter<?> getConverter() {
         return converter;
     }
 
@@ -286,13 +286,13 @@ public class Parameter {
      * Gets the usage string for this parameter.
      * @return A usage string for this parameter
      */
-    public Component getUsage() { return usage; }
+    public @NotNull Component getUsage() { return usage; }
 
     /**
      * Gets a copy of the static tab completion options for this parameter.
      * @return The built-in tab completion options that should be shown for this parameter
      */
-    public List<String> getStaticCompletionOptions() {
+    public @NotNull List<String> getStaticCompletionOptions() {
         return staticCompletionOptions == null ? new ArrayList<>() : new ArrayList<>(staticCompletionOptions);
     }
 
@@ -300,7 +300,7 @@ public class Parameter {
      * Returns the type of this parameter.
      * @return the type of this parameter
      */
-    public ParameterType getType() { return type; }
+    public @NotNull ParameterType getType() { return type; }
 
     /**
      * Gets the default value of the parameter, or null if there is none defined.
