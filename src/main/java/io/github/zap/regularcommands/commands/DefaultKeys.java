@@ -34,7 +34,7 @@ public enum DefaultKeys {
         return key;
     }
 
-    public @NotNull String getDefaultPattern() {
+    public @NotNull String getPattern() {
         return defaultPattern;
     }
 }

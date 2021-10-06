@@ -51,9 +51,19 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         translator.addSource(translationRegistry);
         logger = plugin.getLogger();
         commands = new HashMap<>();
+    }
 
+    /**
+     * Registers the default translations for all keys stored in {@link DefaultKeys}. If translations have already been
+     * registered for the default locale, the previous mappings will not be overwritten. This is mostly a convenience
+     * method; it is preferred that implementations load their own mappings from a language file or other data source.
+     */
+    public void registerDefaultTranslations() {
         for(DefaultKeys key : DefaultKeys.values()) {
-            translationRegistry.register(key.key(), DEFAULT_LOCALE, new MessageFormat(key.getDefaultPattern(), DEFAULT_LOCALE));
+            try {
+                translationRegistry.register(key.key(), DEFAULT_LOCALE, new MessageFormat(key.getPattern(), DEFAULT_LOCALE));
+            }
+            catch (IllegalArgumentException ignored) {}
         }
     }
 
