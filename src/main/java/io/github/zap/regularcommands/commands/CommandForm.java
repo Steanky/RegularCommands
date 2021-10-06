@@ -275,13 +275,6 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
     }
 
     /**
-     * If false, the text returned by execute() will be treated as plaintext. If true, it will be stylized.
-     * @return Whether or not this CommandForm stylizes
-     */
-    @Deprecated
-    public boolean canStylize() { return false; }
-
-    /**
      * Gets the argument completer object that is used to tab complete an argument array that partially matches this
      * form.
      * @return The tab completer to use. If not overridden, defaults to Completers.PARAMETER_COMPLETER
