@@ -7,9 +7,9 @@ import io.github.zap.regularcommands.converter.MatchResult;
 import io.github.zap.regularcommands.converter.Parameter;
 import io.github.zap.regularcommands.util.ArrayUtils;
 import io.github.zap.regularcommands.util.Completers;
-import io.github.zap.regularcommands.util.StringUtils;
 import io.github.zap.regularcommands.validator.CommandValidator;
 import net.kyori.adventure.text.Component;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
