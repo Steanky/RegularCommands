@@ -1,6 +1,4 @@
-package io.github.regularcommands.util;
-
-import net.md_5.bungee.api.chat.TextComponent;
+package io.github.zap.regularcommands.util;
 
 public class ArrayUtils {
     public static final String[] EMPTY_STRING_ARRAY = new String[0];

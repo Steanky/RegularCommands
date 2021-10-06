@@ -1,6 +1,6 @@
-package io.github.regularcommands.util;
+package io.github.zap.regularcommands.util;
 
-import io.github.regularcommands.commands.PermissionData;
+import io.github.zap.regularcommands.commands.PermissionData;
 
 /**
  * Utility class for permission data.

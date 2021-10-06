@@ -1,4 +1,4 @@
-package io.github.regularcommands.commands;
+package io.github.zap.regularcommands.commands;
 
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -9,26 +9,17 @@ import java.util.Objects;
  * An immutable object used as a simple data container. It holds a CommandManager and a CommandSender object.
  */
 public class Context {
-    private final CommandManager manager;
     private final CommandSender sender;
     private final CommandForm<?> form;
 
     /**
-     * Creates a new Context object, which contains a CommandManager and a CommandSender.
-     * @param manager The CommandManager
+     * Creates a new Context object, which contains a CommandSender and a CommandForm.
      * @param sender The CommandSender
      */
-    public Context(@NotNull CommandManager manager, @NotNull CommandForm<?> form, @NotNull  CommandSender sender) {
-        this.manager = Objects.requireNonNull(manager, "manager cannot be null");
+    public Context(@NotNull CommandForm<?> form, @NotNull  CommandSender sender) {
         this.sender = Objects.requireNonNull(sender, "sender cannot be null");
         this.form = Objects.requireNonNull(form, "form cannot be null");
     }
-
-    /**
-     * Gets the manager object.
-     * @return The manager stored in this Context object
-     */
-    public @NotNull CommandManager getManager() { return manager; }
 
     /**
      * Gets the CommandSender object.

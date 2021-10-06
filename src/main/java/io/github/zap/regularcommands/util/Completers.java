@@ -1,7 +1,7 @@
-package io.github.regularcommands.util;
+package io.github.zap.regularcommands.util;
 
-import io.github.regularcommands.commands.CommandForm;
-import io.github.regularcommands.completer.ArgumentCompleter;
+import io.github.zap.regularcommands.commands.CommandForm;
+import io.github.zap.regularcommands.completer.ArgumentCompleter;
 
 import java.util.ArrayList;
 import java.util.List;

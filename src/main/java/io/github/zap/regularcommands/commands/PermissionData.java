@@ -1,4 +1,4 @@
-package io.github.regularcommands.commands;
+package io.github.zap.regularcommands.commands;
 
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;

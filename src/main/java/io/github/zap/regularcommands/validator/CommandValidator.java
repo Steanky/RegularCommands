@@ -1,6 +1,6 @@
-package io.github.regularcommands.validator;
+package io.github.zap.regularcommands.validator;
 
-import io.github.regularcommands.commands.Context;
+import io.github.zap.regularcommands.commands.Context;
 
 /**
  * Used to validate against the command context. Validators can 'depend' on the success of a single other validator,

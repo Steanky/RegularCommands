@@ -1,6 +1,6 @@
-package io.github.regularcommands.converter;
+package io.github.zap.regularcommands.converter;
 
-import io.github.regularcommands.commands.CommandForm;
+import io.github.zap.regularcommands.commands.CommandForm;
 
 /**
  * Data class used internally to store the result of testing a CommandForm against a user input string.

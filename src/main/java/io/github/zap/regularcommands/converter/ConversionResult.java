@@ -1,7 +1,6 @@
-package io.github.regularcommands.converter;
+package io.github.zap.regularcommands.converter;
 
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;

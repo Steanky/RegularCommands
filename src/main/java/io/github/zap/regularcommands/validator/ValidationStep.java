@@ -1,6 +1,6 @@
-package io.github.regularcommands.validator;
+package io.github.zap.regularcommands.validator;
 
-import io.github.regularcommands.commands.Context;
+import io.github.zap.regularcommands.commands.Context;
 
 /**
  * Functional interface defining an object that may test command context.

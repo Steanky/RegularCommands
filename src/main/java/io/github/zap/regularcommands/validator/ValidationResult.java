@@ -1,4 +1,4 @@
-package io.github.regularcommands.validator;
+package io.github.zap.regularcommands.validator;
 
 import net.kyori.adventure.text.Component;
 

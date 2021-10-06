@@ -1,14 +1,15 @@
-package io.github.regularcommands.commands;
+package io.github.zap.regularcommands.commands;
 
-import io.github.regularcommands.converter.ConversionResult;
-import io.github.regularcommands.converter.MatchResult;
-import io.github.regularcommands.message.DefaultMessages;
-import io.github.regularcommands.message.MessageResources;
-import io.github.regularcommands.util.ArrayUtils;
-import io.github.regularcommands.util.StringUtils;
-import io.github.regularcommands.validator.CommandValidator;
-import io.github.regularcommands.validator.ValidationResult;
+import io.github.zap.regularcommands.converter.ConversionResult;
+import io.github.zap.regularcommands.converter.MatchResult;
+import io.github.zap.regularcommands.util.ArrayUtils;
+import io.github.zap.regularcommands.util.StringUtils;
+import io.github.zap.regularcommands.validator.CommandValidator;
+import io.github.zap.regularcommands.validator.ValidationResult;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.translation.TranslationRegistry;
 import org.bukkit.command.*;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,13 @@ import java.util.logging.Logger;
  * This class keeps track of all registered commands and includes some utility functions.
  */
 public class CommandManager implements CommandExecutor, TabCompleter {
+    private static final Key TRANSLATION_REGISTRY_KEY
+            = Key.key("io.github.zap", "regularcommands.translation.registry");
+
+    private static final Locale DEFAULT_LOCALE = Locale.US;
+
+    public static final String ERROR_NO_PERMISSION = "feedback.error.no_permission";
+
     private class SimpleCommand extends RegularCommand {
         private SimpleCommand(String name) {
             super(CommandManager.this, name);
@@ -27,7 +35,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     private final Plugin plugin;
-    private final MessageResources messageResources;
+    private final TranslationRegistry translationRegistry;
     private final Logger logger;
     private final Map<String, RegularCommand> commands;
 
@@ -39,9 +47,11 @@ public class CommandManager implements CommandExecutor, TabCompleter {
      * Creates a new CommandManager and associates it with the specified plugin.
      * @param plugin The associated plugin
      */
-    public CommandManager(@NotNull Plugin plugin, @NotNull MessageResources messageResources) {
+    public CommandManager(@NotNull Plugin plugin, @NotNull GlobalTranslator translator) {
         this.plugin = Objects.requireNonNull(plugin, "plugin cannot be null");
-        this.messageResources = Objects.requireNonNull(messageResources, "messageResources cannot be null");
+        this.translationRegistry = TranslationRegistry.create(TRANSLATION_REGISTRY_KEY);
+        translationRegistry.defaultLocale(DEFAULT_LOCALE);
+        translator.addSource(translationRegistry);
         logger = plugin.getLogger();
         commands = new HashMap<>();
     }
@@ -92,14 +102,17 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     /**
+     * Returns the TranslationRegistry instanced used by this CommandManager.
+     */
+    public @NotNull TranslationRegistry getTranslationRegistry() {
+        return translationRegistry;
+    }
+
+    /**
      * Returns the logger used by this instance, which is the same logger that is used by the bound JavaPlugin.
      * @return The associated Logger
      */
     public @NotNull Logger getLogger() { return logger; }
-
-    public @NotNull MessageResources getMessageResources() {
-        return messageResources;
-    }
 
     /**
      * Registers a CommandForm with this CommandManager. A default implementation of RegularCommand will be created if
@@ -138,7 +151,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         }
                     }
                     else { //sender does not have the required permissions
-                        commandSender.sendMessage(messageResources.namedComponent(DefaultMessages.ERROR_NO_PERMISSION));
+                        commandSender.sendMessage(Component.translatable().key(ERROR_NO_PERMISSION));
                     }
                 }
             }
@@ -156,7 +169,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     private <T> Component validateAndExecute(CommandForm<T> form, CommandSender sender, Object[] args) {
-        Context context = new Context(this, form, sender);
+        Context context = new Context(form, sender);
         CommandValidator<T, ?> validator = form.getValidator(context, args);
 
         if(validator != null) {
@@ -183,7 +196,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             RegularCommand regularCommand = commands.get(command.getName());
 
             if(regularCommand != null) {
-                return regularCommand.getCompletions(this, commandSender, parse(args));
+                return regularCommand.getCompletions(commandSender, parse(args));
             }
         }
 

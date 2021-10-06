@@ -1,10 +1,10 @@
-package io.github.regularcommands.commands;
+package io.github.zap.regularcommands.commands;
 
-import io.github.regularcommands.completer.ArgumentCompleter;
-import io.github.regularcommands.converter.MatchResult;
-import io.github.regularcommands.converter.Parameter;
+import io.github.zap.regularcommands.completer.ArgumentCompleter;
+import io.github.zap.regularcommands.converter.MatchResult;
+import io.github.zap.regularcommands.converter.Parameter;
 
-import io.github.regularcommands.util.StringUtils;
+import io.github.zap.regularcommands.util.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -101,16 +101,14 @@ public abstract class RegularCommand {
     }
 
     /**
-     * Attempts to generate a tab completion list given a CommandManager, CommandSender, and an array of strings
-     * corresponding to a partially completed command.
-     * @param manager The invoking CommandManager object
+     * Attempts to generate a tab completion list given a CommandSender and an array of strings corresponding to a
+     * partially completed command.
      * @param sender The CommandSender that is attempting to tab complete
      * @param args The current argument list, which may be partially or fully completed but should never be null or an
      *             empty array
      * @return A list containing tab completions, or an empty list if none exist
      */
-    public @NotNull List<String> getCompletions(@NotNull CommandManager manager, @NotNull CommandSender sender,
-                                                @NotNull String[] args) {
+    public @NotNull List<String> getCompletions(@NotNull CommandSender sender, @NotNull String[] args) {
         List<String> possibleCompletions = new ArrayList<>();
 
         for(CommandForm<?> form : forms) {
@@ -118,7 +116,7 @@ public abstract class RegularCommand {
                 ArgumentCompleter completer = form.getCompleter();
 
                 if(completer != null) {
-                    List<String> formCompletions = completer.complete(new Context(manager, form, sender), args);
+                    List<String> formCompletions = completer.complete(new Context(form, sender), args);
 
                     if(formCompletions != null) {
                         possibleCompletions.addAll(formCompletions);

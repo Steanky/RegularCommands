@@ -1,14 +1,14 @@
-package io.github.regularcommands.commands;
+package io.github.zap.regularcommands.commands;
 
-import io.github.regularcommands.completer.ArgumentCompleter;
-import io.github.regularcommands.converter.ArgumentConverter;
-import io.github.regularcommands.converter.ConversionResult;
-import io.github.regularcommands.converter.MatchResult;
-import io.github.regularcommands.converter.Parameter;
-import io.github.regularcommands.util.ArrayUtils;
-import io.github.regularcommands.util.Completers;
-import io.github.regularcommands.util.StringUtils;
-import io.github.regularcommands.validator.CommandValidator;
+import io.github.zap.regularcommands.completer.ArgumentCompleter;
+import io.github.zap.regularcommands.converter.ArgumentConverter;
+import io.github.zap.regularcommands.converter.ConversionResult;
+import io.github.zap.regularcommands.converter.MatchResult;
+import io.github.zap.regularcommands.converter.Parameter;
+import io.github.zap.regularcommands.util.ArrayUtils;
+import io.github.zap.regularcommands.util.Completers;
+import io.github.zap.regularcommands.util.StringUtils;
+import io.github.zap.regularcommands.validator.CommandValidator;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,6 +57,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * The Parameter array is also validated to ensure some basic assumptions can be made about the signature. 'vararg'
      * parameters cannot appear before non-vararg parameters, optional and vararg parameters cannot be mixed, and finally
      * optional parameters themselves cannot appear before 'regular' parameters.
+     * @param command The RegularCommand instance this CommandForm is tied to
      * @param usage A short, user-friendly description of what the command does
      * @param permissionData The permissions required to execute this command
      * @param parameters The parameters array that defines the signature of this command

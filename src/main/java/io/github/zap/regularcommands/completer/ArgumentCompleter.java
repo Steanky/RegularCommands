@@ -1,6 +1,6 @@
-package io.github.regularcommands.completer;
+package io.github.zap.regularcommands.completer;
 
-import io.github.regularcommands.commands.Context;
+import io.github.zap.regularcommands.commands.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

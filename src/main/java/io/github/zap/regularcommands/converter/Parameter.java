@@ -1,4 +1,4 @@
-package io.github.regularcommands.converter;
+package io.github.zap.regularcommands.converter;
 
 import com.google.common.collect.Lists;
 
