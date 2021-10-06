@@ -2,9 +2,8 @@ package io.github.zap.regularcommands.commands;
 
 import io.github.zap.regularcommands.completer.ArgumentCompleter;
 import io.github.zap.regularcommands.converter.MatchResult;
-import io.github.zap.regularcommands.converter.Parameter;
 
-import io.github.zap.regularcommands.util.StringUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,21 +14,21 @@ import java.util.List;
  * Represents a command, which should conceptually organize a number of related CommandForms. Strictly, RegularCommands
  * have a unique name (which is used to identify it) and a user-friendly usage string.
  */
-public abstract class RegularCommand {
+public class RegularCommand {
     private final CommandManager manager;
     private final String name;
     private final List<CommandForm<?>> forms;
-    private final StringBuilder usageBuilder;
+    private final PageBuilder pageBuilder;
 
     /**
      * Creates a new RegularCommand with the specified name and list of forms.
      * @param name The name of the RegularCommand
      */
-    public RegularCommand(@NotNull CommandManager manager, @NotNull String name) {
+    public RegularCommand(@NotNull CommandManager manager, @NotNull String name, @NotNull PageBuilder pageBuilder) {
         this.manager = manager;
         this.name = Objects.requireNonNull(name, "name cannot be null");
         this.forms = new ArrayList<>();
-        this.usageBuilder = new StringBuilder("Usages for /" + name + ": \n");
+        this.pageBuilder = Objects.requireNonNull(pageBuilder, "pageBuilder cannot be null");
     }
 
     /**
@@ -38,19 +37,7 @@ public abstract class RegularCommand {
      */
     public void addForm(@NotNull CommandForm<?> form) {
         forms.add(Objects.requireNonNull(form, "form cannot be null"));
-
-        usageBuilder.append('/').append(getName()).append(' ');
-
-        for(Parameter parameter : form) {
-            usageBuilder.append(parameter.getUsage()).append(' ');
-        }
-
-        String usage = form.getUsage();
-        if(usage != null && !usage.equals(StringUtils.EMPTY)) {
-            usageBuilder.append("— ").append(usage);
-        }
-
-        usageBuilder.append('\n');
+        pageBuilder.addEntry(form);
     }
 
     /**
@@ -69,11 +56,9 @@ public abstract class RegularCommand {
         return name;
     }
 
-    /**
-     * Gets the usage string that contains information about all the forms of this command.
-     * @return The usage string for this RegularCommand
-     */
-    public @NotNull String getUsage() { return usageBuilder.toString(); }
+    public @NotNull PageBuilder getPageBuilder() {
+        return pageBuilder;
+    }
 
     /**
      * Returns a list of all CommandForm objects that match the provided argument array.
@@ -112,7 +97,7 @@ public abstract class RegularCommand {
         List<String> possibleCompletions = new ArrayList<>();
 
         for(CommandForm<?> form : forms) {
-            if(form.matchScore(args) >= 0) {
+            if(form.getPermissions().validateFor(sender) && form.matchScore(args) >= 0) {
                 ArgumentCompleter completer = form.getCompleter();
 
                 if(completer != null) {

@@ -37,7 +37,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
     }
 
     private final RegularCommand command;
-    private final String usage;
+    private final Component usage;
     private final Parameter[] parameters;
     private final PermissionData permissions;
     private final int requiredLength;
@@ -62,7 +62,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * @param permissionData The permissions required to execute this command
      * @param parameters The parameters array that defines the signature of this command
      */
-    public CommandForm(@NotNull RegularCommand command, @NotNull String usage, @NotNull PermissionData permissionData,
+    public CommandForm(@NotNull RegularCommand command, @NotNull Component usage, @NotNull PermissionData permissionData,
                        @NotNull Parameter... parameters) {
         this.command = Objects.requireNonNull(command, "command cannot be null");
         this.usage = Objects.requireNonNull(usage, "usage cannot be null");
@@ -262,7 +262,7 @@ public abstract class CommandForm<T> implements Iterable<Parameter> {
      * Returns a short, user-friendly string that should explain what the form does.
      * @return A user-friendly string explaining what the CommandForm does
      */
-    public String getUsage() {
+    public @NotNull Component getUsage() {
         return usage;
     }
 

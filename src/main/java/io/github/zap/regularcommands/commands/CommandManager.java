@@ -2,6 +2,7 @@ package io.github.zap.regularcommands.commands;
 
 import io.github.zap.regularcommands.converter.ConversionResult;
 import io.github.zap.regularcommands.converter.MatchResult;
+import io.github.zap.regularcommands.converter.Parameter;
 import io.github.zap.regularcommands.util.ArrayUtils;
 import io.github.zap.regularcommands.util.StringUtils;
 import io.github.zap.regularcommands.validator.CommandValidator;
@@ -26,11 +27,12 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
     private static final Locale DEFAULT_LOCALE = Locale.US;
 
-    public static final String ERROR_NO_PERMISSION = "feedback.error.no_permission";
+    public static final String ERROR_NO_PERMISSION_KEY = "feedback.error.no_permission";
+    public static final String ERROR_NO_FORMS_KEY = "feedback.error.no_forms";
 
     private class SimpleCommand extends RegularCommand {
         private SimpleCommand(String name) {
-            super(CommandManager.this, name);
+            super(CommandManager.this, name, new BasicPageBuilder());
         }
     }
 
@@ -40,8 +42,6 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     private final Map<String, RegularCommand> commands;
 
     private final StringBuilder BUFFER = new StringBuilder(); //used for internal string parsing
-
-    private static final List<String> EMPTY_STRING_LIST = new ArrayList<>();
 
     /**
      * Creates a new CommandManager and associates it with the specified plugin.
@@ -102,7 +102,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     /**
-     * Returns the TranslationRegistry instanced used by this CommandManager.
+     * Returns the TranslationRegistry instance used by this CommandManager.
      */
     public @NotNull TranslationRegistry getTranslationRegistry() {
         return translationRegistry;
@@ -151,12 +151,18 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         }
                     }
                     else { //sender does not have the required permissions
-                        commandSender.sendMessage(Component.translatable().key(ERROR_NO_PERMISSION));
+                        commandSender.sendMessage(Component.translatable().key(ERROR_NO_PERMISSION_KEY));
                     }
                 }
             }
             else { //no matching forms
-                commandSender.sendMessage(regularCommand.getUsage());
+                PageBuilder pageBuilder = regularCommand.getPageBuilder();
+                if(pageBuilder.pageCount() > 0) {
+                    commandSender.sendMessage(pageBuilder.getPage(0));
+                }
+                else {
+                    commandSender.sendMessage(Component.translatable(ERROR_NO_FORMS_KEY));
+                }
             }
         }
         else {
@@ -200,7 +206,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             }
         }
 
-        return EMPTY_STRING_LIST;
+        return new ArrayList<>();
     }
 
     private String[] parse(String[] args) {
