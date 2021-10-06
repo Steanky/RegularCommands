@@ -5,7 +5,10 @@ import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class BasicPageBuilder implements PageBuilder {
     private static final int DEFAULT_ENTRIES_PER_PAGE = 8;
@@ -40,15 +43,12 @@ public class BasicPageBuilder implements PageBuilder {
     public @NotNull Component getPage(int index) {
         if(index < pages.size()) {
             Component[] pageBody = pages.get(index);
-
-            Component header = Component.translatable(DefaultKeys.NAVBAR.key(), Component.text(index + 1),
+            Component[] fullPage = new Component[pageBody.length + 1];
+            fullPage[0] = Component.translatable(DefaultKeys.NAVBAR.key(), Component.text(index + 1),
                     Component.text(pages.size()));
 
-            Component[] page = new Component[pageBody.length + 1];
-            page[0] = header;
-
-            System.arraycopy(pageBody, 0, page, 1, page.length - 1);
-            return Component.join(Component.newline(), page);
+            System.arraycopy(pageBody, 0, fullPage, 1, pageBody.length);
+            return Component.join(Component.newline(), Arrays.stream(fullPage).filter(Objects::nonNull).collect(Collectors.toList()));
         }
 
         throw new IndexOutOfBoundsException("index " + index + " out of bounds for length " + pages.size());
