@@ -1,6 +1,7 @@
 package io.github.zap.regularcommands.converter;
 
 import com.google.common.collect.Lists;
+import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class Parameter {
 
     private final Pattern pattern;
     private final String match;
-    private final String usage;
+    private final Component usage;
     private final ArgumentConverter<Object> converter;
     private final List<String> staticCompletionOptions;
 
@@ -35,20 +36,18 @@ public class Parameter {
     private final String defaultValue;
 
     @SuppressWarnings("unchecked")
-    private Parameter(String definition, String usage, String defaultValue, ArgumentConverter<?> converter,
+    private Parameter(String definition, Component usage, String defaultValue, ArgumentConverter<?> converter,
                       List<String> staticCompletionOptions, ParameterType type) {
         switch (type) {
             case SIMPLE:
                 this.pattern = null;
                 this.match = Objects.requireNonNull(definition, "definition cannot be null for ParameterType.SIMPLE");
-                this.usage = usage == null ? '[' + definition + ']' : usage;
                 this.staticCompletionOptions = Lists.newArrayList(definition);
                 this.defaultValue = null;
                 break;
             case OPTIONAL:
                 this.pattern = Pattern.compile(definition);
                 this.match = null;
-                this.usage = Objects.requireNonNull(usage, "usage cannot be null for ParameterType.OPTIONAL");
                 this.staticCompletionOptions = staticCompletionOptions;
                 this.defaultValue = Objects.requireNonNull(defaultValue, "defaultValue cannot be null for ParameterType.OPTIONAL");
                 break;
@@ -57,12 +56,12 @@ public class Parameter {
             default:
                 this.pattern = Pattern.compile(definition);
                 this.match = null;
-                this.usage = Objects.requireNonNull(usage, "usage cannot be null except for ParameterType.SIMPLE");
                 this.staticCompletionOptions = staticCompletionOptions;
                 this.defaultValue = null;
                 break;
         }
 
+        this.usage = Objects.requireNonNull(usage, "usage cannot be null for ParameterType.OPTIONAL");
         this.converter = (ArgumentConverter<Object>) converter;
         this.type = type;
     }
@@ -84,7 +83,7 @@ public class Parameter {
      * @param staticCompletionOptions A list of completion options that will appear when a user tries to tab complete
      *                                on this parameter
      */
-    public Parameter(String regex, String usage, String defaultValue, ArgumentConverter<?> converter,
+    public Parameter(String regex, Component usage, String defaultValue, ArgumentConverter<?> converter,
                      List<String> staticCompletionOptions) {
         this(regex, usage, defaultValue, converter, staticCompletionOptions, ParameterType.OPTIONAL);
     }
@@ -104,7 +103,7 @@ public class Parameter {
      * @param defaultValue The value that will be used if the user does not supply this parameter
      * @param converter The converter that will be used to convert user input
      */
-    public Parameter(String regex, String usage, String defaultValue, ArgumentConverter<?> converter) {
+    public Parameter(String regex, Component usage, String defaultValue, ArgumentConverter<?> converter) {
         this(regex, usage, defaultValue, converter, null, ParameterType.OPTIONAL);
     }
 
@@ -122,7 +121,7 @@ public class Parameter {
      *              users.
      * @param defaultValue The value that will be used if the user does not supply this parameter
      */
-    public Parameter(String regex, String usage, String defaultValue) {
+    public Parameter(String regex, Component usage, String defaultValue) {
         this(regex, usage, defaultValue, null, null, ParameterType.OPTIONAL);
     }
 
@@ -143,7 +142,7 @@ public class Parameter {
      *                                on this parameter
      * @param isVararg Whether or not the parameter is variable-argument (if it can match any number of user arguments)
      */
-    public Parameter(String regex, String usage, ArgumentConverter<?> converter,
+    public Parameter(String regex, Component usage, ArgumentConverter<?> converter,
                      List<String> staticCompletionOptions, boolean isVararg) {
         this(regex, usage, null, converter, staticCompletionOptions, isVararg ? ParameterType.VARARG :
                 ParameterType.STANDARD);
@@ -165,7 +164,7 @@ public class Parameter {
      * @param staticCompletionOptions A list of completion options that will appear when a user tries to tab complete
      *                                on this parameter
      */
-    public Parameter(String regex, String usage, ArgumentConverter<?> converter, List<String> staticCompletionOptions) {
+    public Parameter(String regex, Component usage, ArgumentConverter<?> converter, List<String> staticCompletionOptions) {
         this(regex, usage, null, converter, staticCompletionOptions, ParameterType.STANDARD);
     }
 
@@ -184,7 +183,7 @@ public class Parameter {
      * @param converter The converter that will be used to convert user input
      * @param isVararg Whether or not the parameter is variable-argument (if it can match any number of user arguments)
      */
-    public Parameter(String regex, String usage, ArgumentConverter<?> converter, boolean isVararg) {
+    public Parameter(String regex, Component usage, ArgumentConverter<?> converter, boolean isVararg) {
         this(regex, usage, null, converter, null, isVararg ? ParameterType.VARARG :
                 ParameterType.STANDARD);
     }
@@ -203,7 +202,7 @@ public class Parameter {
      *              users.
      * @param converter The converter that will be used to convert user input
      */
-    public Parameter(String regex, String usage, ArgumentConverter<?> converter) {
+    public Parameter(String regex, Component usage, ArgumentConverter<?> converter) {
         this(regex, usage, null, converter, null, ParameterType.STANDARD);
     }
 
@@ -221,7 +220,7 @@ public class Parameter {
      *              users.
      * @param isVararg Whether or not the parameter is variable-argument (if it can match any number of user arguments)
      */
-    public Parameter(String regex, String usage, boolean isVararg) {
+    public Parameter(String regex, Component usage, boolean isVararg) {
         this(regex, usage, null, null, null, isVararg ?
                 ParameterType.VARARG : ParameterType.STANDARD);
     }
@@ -239,7 +238,7 @@ public class Parameter {
      *              Parameter usages are delimited by spaces. Include brackets or quotation marks to avoid confusing
      *              users.
      */
-    public Parameter(String regex, String usage) {
+    public Parameter(String regex, Component usage) {
         this(regex, usage, null, null, null, ParameterType.STANDARD);
     }
 
@@ -287,7 +286,7 @@ public class Parameter {
      * Gets the usage string for this parameter.
      * @return A usage string for this parameter
      */
-    public String getUsage() { return usage; }
+    public Component getUsage() { return usage; }
 
     /**
      * Gets a copy of the static tab completion options for this parameter.

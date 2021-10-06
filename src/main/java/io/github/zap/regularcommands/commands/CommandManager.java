@@ -2,7 +2,6 @@ package io.github.zap.regularcommands.commands;
 
 import io.github.zap.regularcommands.converter.ConversionResult;
 import io.github.zap.regularcommands.converter.MatchResult;
-import io.github.zap.regularcommands.converter.Parameter;
 import io.github.zap.regularcommands.util.ArrayUtils;
 import io.github.zap.regularcommands.util.StringUtils;
 import io.github.zap.regularcommands.validator.CommandValidator;
@@ -15,6 +14,7 @@ import org.bukkit.command.*;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -26,9 +26,6 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             = Key.key("io.github.zap", "regularcommands.translation.registry");
 
     private static final Locale DEFAULT_LOCALE = Locale.US;
-
-    public static final String ERROR_NO_PERMISSION_KEY = "feedback.error.no_permission";
-    public static final String ERROR_NO_FORMS_KEY = "feedback.error.no_forms";
 
     private class SimpleCommand extends RegularCommand {
         private SimpleCommand(String name) {
@@ -54,6 +51,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         translator.addSource(translationRegistry);
         logger = plugin.getLogger();
         commands = new HashMap<>();
+
+        for(DefaultKeys key : DefaultKeys.values()) {
+            translationRegistry.register(key.key(), DEFAULT_LOCALE, new MessageFormat(key.getDefaultPattern(), DEFAULT_LOCALE));
+        }
     }
 
     /**
@@ -151,18 +152,12 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         }
                     }
                     else { //sender does not have the required permissions
-                        commandSender.sendMessage(Component.translatable().key(ERROR_NO_PERMISSION_KEY));
+                        commandSender.sendMessage(Component.translatable(DefaultKeys.ERROR_NO_PERMISSION.key()));
                     }
                 }
             }
             else { //no matching forms
-                PageBuilder pageBuilder = regularCommand.getPageBuilder();
-                if(pageBuilder.pageCount() > 0) {
-                    commandSender.sendMessage(pageBuilder.getPage(0));
-                }
-                else {
-                    commandSender.sendMessage(Component.translatable(ERROR_NO_FORMS_KEY));
-                }
+                commandSender.sendMessage(Component.translatable(DefaultKeys.ERROR_NO_FORMS.key()));
             }
         }
         else {

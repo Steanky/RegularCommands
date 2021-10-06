@@ -1,5 +1,6 @@
 package io.github.zap.regularcommands.util;
 
+import io.github.zap.regularcommands.commands.DefaultKeys;
 import io.github.zap.regularcommands.converter.ArgumentConverter;
 import io.github.zap.regularcommands.converter.ConversionResult;
 import net.kyori.adventure.text.Component;
@@ -14,23 +15,12 @@ import java.util.Objects;
  * Utility class containing built-in converters and helper methods.
  */
 public final class Converters {
-    public static final String ERROR_CONVERT_BIG_DECIMAL_KEY = "feedback.error.convert.big_decimal";
-    public static final String ERROR_CONVERT_BIG_INTEGER_KEY = "feedback.error.convert.big_integer";
-    public static final String ERROR_CONVERT_LONG_KEY = "feedback.error.convert.long";
-    public static final String ERROR_CONVERT_INTEGER_KEY = "feedback.error.convert.integer";
-    public static final String ERROR_CONVERT_DOUBLE_KEY = "feedback.error.convert.double";
-    public static final String ERROR_CONVERT_FLOAT_KEY = "feedback.error.convert.float";
-    public static final String ERROR_CONVERT_SHORT_KEY = "feedback.error.convert.short";
-    public static final String ERROR_CONVERT_BYTE_KEY = "feedback.error.convert.byte";
-    public static final String ERROR_CONVERT_BOOLEAN_KEY = "feedback.error.convert.boolean";
-    public static final String ERROR_CONVERT_MATERIAL_KEY = "feedback.error.convert.material";
-
     public final static ArgumentConverter<BigDecimal> BIG_DECIMAL_CONVERTER = (form, argument) -> {
         try {
             return ConversionResult.of(true, new BigDecimal(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_BIG_DECIMAL_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_BIG_DECIMAL.key(),
                     Component.text(argument)));
         }
     };
@@ -40,7 +30,7 @@ public final class Converters {
             return ConversionResult.of(true, new BigInteger(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_BIG_INTEGER_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_BIG_INTEGER.key(),
                     Component.text(argument)));
         }
     };
@@ -50,7 +40,7 @@ public final class Converters {
             return ConversionResult.of(true, Long.parseLong(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_LONG_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_LONG.key(),
                     Component.text(argument)));
         }
     };
@@ -60,7 +50,7 @@ public final class Converters {
             return ConversionResult.of(true, Integer.parseInt(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_INTEGER_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_INTEGER.key(),
                     Component.text(argument)));
         }
     };
@@ -70,7 +60,7 @@ public final class Converters {
             return ConversionResult.of(true, Double.parseDouble(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_DOUBLE_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_DOUBLE.key(),
                     Component.text(argument)));
         }
     };
@@ -80,7 +70,7 @@ public final class Converters {
             return ConversionResult.of(true, Float.parseFloat(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_FLOAT_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_FLOAT.key(),
                     Component.text(argument)));
         }
     };
@@ -90,7 +80,7 @@ public final class Converters {
             return ConversionResult.of(true, Short.parseShort(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_SHORT_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_SHORT.key(),
                     Component.text(argument)));
         }
     };
@@ -100,7 +90,7 @@ public final class Converters {
             return ConversionResult.of(true, Byte.parseByte(argument), null);
         }
         catch(NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_BYTE_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_BYTE.key(),
                     Component.text(argument)));
         }
     };
@@ -110,7 +100,7 @@ public final class Converters {
             return ConversionResult.of(true, parseBoolean(argument), null);
         }
         catch (NumberFormatException e) {
-            return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_BOOLEAN_KEY,
+            return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_BOOLEAN.key(),
                     Component.text(argument)));
         }
     };
@@ -122,7 +112,7 @@ public final class Converters {
             return ConversionResult.of(true, material, null);
         }
 
-        return ConversionResult.of(false, null, Component.translatable(ERROR_CONVERT_MATERIAL_KEY,
+        return ConversionResult.of(false, null, Component.translatable(DefaultKeys.ERROR_CONVERT_MATERIAL.key(),
                 Component.text(argument)));
     };
 

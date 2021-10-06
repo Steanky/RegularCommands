@@ -8,18 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BasicPageBuilder implements PageBuilder {
-    public static final String NAVBAR_KEY = "feedback.page.navbar";
-
     private static final int DEFAULT_ENTRIES_PER_PAGE = 8;
 
     private final int entriesPerPage;
-    private int componentsOnLastPage = 0;
     private final List<Component[]> pages;
+    private int lastPageSize = 0;
+
 
     public BasicPageBuilder(int entriesPerPage) {
-        Validate.isTrue(entriesPerPage > 0, "entriesPerPage must be >= 0");
-        this.entriesPerPage = entriesPerPage;
+        Validate.isTrue(entriesPerPage > 0, "entriesPerPage must be > 0");
         this.pages = new ArrayList<>();
+        this.entriesPerPage = entriesPerPage;
     }
 
     public BasicPageBuilder() {
@@ -28,13 +27,13 @@ public class BasicPageBuilder implements PageBuilder {
 
     @Override
     public void addEntry(@NotNull CommandForm<?> form) {
-        Component[] components = pages.get(pages.size() - 1);
-        if(componentsOnLastPage >= components.length) {
-            pages.add(components = new Component[entriesPerPage]);
-            componentsOnLastPage = 0;
+        Component[] lastPageArray = pages.get(pages.size() - 1);
+        if(lastPageSize >= lastPageArray.length) {
+            pages.add(lastPageArray = new Component[entriesPerPage]);
+            lastPageSize = 0;
         }
 
-        components[componentsOnLastPage] = form.getUsage();
+        lastPageArray[lastPageSize++] = form.getUsage();
     }
 
     @Override
@@ -42,7 +41,7 @@ public class BasicPageBuilder implements PageBuilder {
         if(index < pages.size()) {
             Component[] pageBody = pages.get(index);
 
-            Component header = Component.translatable(NAVBAR_KEY, Component.text(index + 1),
+            Component header = Component.translatable(DefaultKeys.NAVBAR.key(), Component.text(index + 1),
                     Component.text(pages.size()));
 
             Component[] page = new Component[pageBody.length + 1];

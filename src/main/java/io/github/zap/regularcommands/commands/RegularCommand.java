@@ -2,13 +2,12 @@ package io.github.zap.regularcommands.commands;
 
 import io.github.zap.regularcommands.completer.ArgumentCompleter;
 import io.github.zap.regularcommands.converter.MatchResult;
-
-import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a command, which should conceptually organize a number of related CommandForms. Strictly, RegularCommands
