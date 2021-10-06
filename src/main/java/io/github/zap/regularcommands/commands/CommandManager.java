@@ -153,7 +153,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                             CommandForm<?> form = match.getForm();
                             Component output = validateAndExecute(form, commandSender, conversionResult.getConversion());
 
-                            if(output != null) { //we have something to display
+                            if(output != null && !output.equals(Component.empty())) { //we have something to display
                                 commandSender.sendMessage(output);
                             }
                         }
